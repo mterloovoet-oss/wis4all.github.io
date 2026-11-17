@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ontdek wiskunde bij Wis4All. Speel met vormen, getallen en grafieken.">
+<title>Wis4All | Wiskunde om te ontdekken</title>
+<style>
+:root{color-scheme:light;--ink:#302139;--paper:#fff9f1;--plum:#492544;--peach:#ffc9ad;--mint:#e3ebd4;--lavender:#e9ddf2;--rule:#dfd1d8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.55 "DM Sans",system-ui,sans-serif}a{color:inherit}button,input{font:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #a34118;outline-offset:4px}
+.wrap{width:min(1140px,calc(100% - 3rem));margin:auto}header .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:76px}.brand{text-decoration:none;font-weight:850;font-size:1.55rem;letter-spacing:-.07em}.brand span{background:var(--plum);color:var(--paper);padding:.05em .34em .1em;border-radius:.43em;margin-left:.1em}nav{display:flex;gap:clamp(.75rem,3vw,2.4rem);font-weight:650;font-size:.94rem}nav a{text-underline-offset:5px}
+.hero{background:var(--plum);color:var(--paper);overflow:hidden}.hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:clamp(1.5rem,5vw,5rem);padding-block:clamp(3rem,8vw,7rem)}.intro{color:var(--peach);font-weight:750;margin:0 0 1rem}.hero h1,h2{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.055em;line-height:1;margin:0}.hero h1{font-size:clamp(3.15rem,6.5vw,6rem);max-width:10ch}.hero h1 em{color:var(--peach);font-weight:400}.hero .desc{max-width:36ch;margin:1.55rem 0;font-size:1.1rem}.cta{display:inline-block;padding:.75rem 1.2rem;background:var(--peach);color:var(--ink);border-radius:100px;font-weight:750;text-decoration:none}.cta:hover{background:#ffe0cc}
+.poster{position:relative;aspect-ratio:1;max-width:430px;width:100%;margin:auto;background-color:#fbd1ba;background-image:linear-gradient(#49254420 1px,transparent 1px),linear-gradient(90deg,#49254420 1px,transparent 1px);background-size:10% 10%;border-radius:50% 50% 1.5rem 1.5rem;overflow:hidden;color:var(--plum)}.poster span{position:absolute}.orbit{border:1px solid currentColor;border-radius:50%;width:68%;height:39%;top:31%;left:16%;transform:rotate(-42deg)}.orbit.second{transform:rotate(42deg)}.disc{width:38%;aspect-ratio:1;top:31%;left:31%;border-radius:50%;background:var(--plum);box-shadow:inset -15px -15px #2e1935}.dot{width:10%;aspect-ratio:1;top:22%;left:66%;border-radius:50%;background:var(--mint);border:1px solid var(--ink)}.pi{top:66%;left:14%;font:italic clamp(2rem,5vw,5rem)/1 Georgia}.star{top:12%;left:29%;font-size:clamp(1.4rem,4vw,3rem)}.root{right:11%;bottom:9%;font:italic 1.25rem Georgia}
+section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,4rem)}.lab p{margin:.65rem 0 0}.tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.4rem 0 .9rem}.tabs button{border:1px solid var(--plum);color:var(--plum);background:transparent;border-radius:100px;padding:.5rem 1rem;cursor:pointer;font-weight:700}.tabs button[aria-pressed=true]{background:var(--plum);color:white}.tabs button:hover:not([aria-pressed=true]){background:var(--lavender)}
+.demo{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:1.35rem;overflow:hidden;background:#fffdf9}.controls{padding:clamp(1.25rem,4vw,3rem)}h3{font-size:1.5rem;margin:0;line-height:1.2}.controls label{display:block;font-weight:750;margin-top:1.45rem}.controls input{width:100%;accent-color:var(--plum);margin:.65rem 0}.result{display:block;background:var(--lavender);border-radius:.6rem;padding:.6rem .85rem;margin:.5rem 0;font-weight:750;font-variant-numeric:tabular-nums}.stage{background:var(--mint);min-width:0;display:grid;place-items:center;padding:1rem}.stage canvas{width:min(100%,440px);height:auto;display:block}.topics{border-top:1px solid var(--rule);padding:1.1rem 0}.topics summary{cursor:pointer;font-weight:750}.topics p{max-width:65ch}footer{border-top:1px solid var(--rule);padding:1.5rem 0}footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem}footer a:last-child{font-size:.9rem}
+@media(max-width:740px){.hero .wrap,.demo{grid-template-columns:1fr}.poster{width:min(74%,290px)}.stage canvas{width:min(100%,340px)}.hero h1{max-width:12ch}}
+@media(max-width:400px){.wrap{width:calc(100% - 2rem)}nav{font-size:.85rem;gap:.65rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body id="boven">
+<header><div class="wrap"><a class="brand" aria-label="Wis4All, naar boven" href="#boven">wis<span>4all</span></a><nav aria-label="Hoofdnavigatie"><a href="#ontdek">Ontdek</a><a href="#begrippen">Begrippen</a></nav></div></header>
+<main>
+<div class="hero"><div class="wrap">
+<div><p class="intro">Wiskunde om te ontdekken</p><h1>‘Achter elk getal zit iets om <em>nieuwsgierig</em> naar te zijn.’</h1><p class="desc">Schuif, kijk wat er verandert en ontdek hoe vormen, breuken en grafieken werken.</p><a class="cta" href="#ontdek">Probeer het uit ↓</a></div>
+<div class="poster" aria-hidden="true"><span class="orbit"></span><span class="orbit second"></span><span class="disc"></span><span class="dot"></span><span class="star">✦</span><span class="pi">π</span><span class="root">√4 = 2</span></div>
+</div></div>
+<section class="lab wrap" id="ontdek">
+<h2>Speel met wiskunde</h2>
+<p>Kies een onderwerp en beweeg de schuifregelaar.</p>
+<div class="tabs" role="group" aria-label="Onderwerp"><button type="button" data-mode="shape" aria-pressed="true">Meetkunde</button><button type="button" data-mode="fraction" aria-pressed="false">Breuken</button><button type="button" data-mode="graph" aria-pressed="false">Grafieken</button></div>
+<div class="demo">
+<div class="controls"><h3 id="demo-title">Dezelfde omtrek, andere vorm</h3><p id="demo-text">De omtrek blijft 24 cm. Als de breedte toeneemt, neemt de hoogte af.</p>
+<label for="slider" id="slider-label">Breedte</label><input id="slider" type="range" min="1" max="11" value="6" aria-describedby="demo-text"><output class="result" id="result" for="slider" aria-live="polite">6 cm × 6 cm · Oppervlakte 36 cm²</output><p id="demo-note">Bij breedte en hoogte van 6 cm is de oppervlakte het grootst.</p></div>
+<div class="stage"><canvas id="drawing" width="660" height="390" aria-hidden="true"></canvas></div>
+</div>
+<noscript><p>Schakel JavaScript in om de tekeningen te laten meebewegen.</p></noscript>
+</section>
+<section class="wrap" id="begrippen" aria-label="Begrippen">
+<h2 style="margin-bottom:1.25rem">Even opzoeken</h2>
+<details class="topics"><summary>Omtrek en oppervlakte</summary><p>De omtrek is de lengte langs de rand. De oppervlakte is de grootte van het vlak binnen die rand. Bij een rechthoek bereken je de oppervlakte met breedte × hoogte.</p></details>
+<details class="topics"><summary>Teller en noemer</summary><p>De noemer geeft aan in hoeveel gelijke stukken het geheel verdeeld is. De teller geeft aan hoeveel van die stukken je neemt.</p></details>
+<details class="topics"><summary>Een stijgende of dalende lijn</summary><p>In de formule y = ax geeft a aan hoeveel y verandert als x met 1 toeneemt. Bij a &gt; 0 stijgt de lijn, bij a &lt; 0 daalt ze en bij a = 0 loopt ze horizontaal.</p></details>
+</section>
+</main>
+<footer><div class="wrap"><a class="brand" href="#boven">wis<span>4all</span></a><a href="#boven">Naar boven ↑</a></div></footer>
+<script>
+const modes = {
+  shape: {title:'Dezelfde omtrek, andere vorm', text:'De omtrek blijft 24 cm. Als de breedte toeneemt, neemt de hoogte af.', label:'Breedte', min:1,max:11,value:6,note:'Bij breedte en hoogte van 6 cm is de oppervlakte het grootst.'},
+  fraction: {title:'Een cirkel in acht stukken', text:'Kleur een aantal stukken. Elk stuk is precies een achtste van de cirkel.',label:'Gekleurde stukken',min:0,max:8,value:3,note:'Vier achtste is evenveel als een halve cirkel.'},
+  graph: {title:'De helling van een lijn', text:'Verander a in de formule y = ax en kijk hoe de lijn meedraait rond de oorsprong.',label:'Helling a',min:-3,max:3,value:1,note:'Bij a = 0 valt de lijn samen met de x-as.'}
+};
+const slider = document.querySelector('#slider');
+const result = document.querySelector('#result');
+const canvas = document.querySelector('#drawing');
+const ctx = canvas.getContext('2d');
+const tabs = document.querySelectorAll('[data-mode]');
+const percentage = new Intl.NumberFormat('nl-NL',{style:'percent',maximumFractionDigits:1});
+let active = 'shape';
+function render(){
+  const n = slider.valueAsNumber;
+  const height = 12 - n;
+  let summary;
+  ctx.clearRect(0,0,660,390);
+  ctx.strokeStyle = '#492544';
+  ctx.fillStyle = '#ffc9ad';
+  ctx.lineWidth = 3;
+
+  if(active === 'shape'){
+    const unit = 27;
+    const x = (660 - n*unit)/2;
+    const y = (390 - height*unit)/2;
+    ctx.fillRect(x,y,n*unit,height*unit);
+    ctx.strokeRect(x,y,n*unit,height*unit);
+    ctx.strokeStyle = '#49254458';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i=1;i<n;i++){ctx.moveTo(x+i*unit,y);ctx.lineTo(x+i*unit,y+height*unit);}
+    for(let i=1;i<height;i++){ctx.moveTo(x,y+i*unit);ctx.lineTo(x+n*unit,y+i*unit);}
+    ctx.stroke();
+    summary = n+' cm × '+height+' cm · Oppervlakte '+n*height+' cm²';
+    slider.setAttribute('aria-valuetext',n+' centimeter breed');
+  } else if(active === 'fraction'){
+    for(let i=0;i<8;i++){
+      const start = -Math.PI/2 + i*Math.PI/4;
+      ctx.beginPath();
+      ctx.moveTo(330,195);
+      ctx.arc(330,195,150,start,start+Math.PI/4);
+      ctx.closePath();
+      ctx.fillStyle = i<n ? '#ffc9ad' : '#fff9f1';
+      ctx.fill();
+      ctx.stroke();
+    }
+    summary = n+' van de 8 stukken · '+percentage.format(n/8);
+    slider.setAttribute('aria-valuetext',n+' van de 8 stukken');
+  } else {
+    ctx.save();
+    ctx.translate(330,195);
+    ctx.strokeStyle='#49254438';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let x=-270;x<=270;x+=30){ctx.moveTo(x,-165);ctx.lineTo(x,165);}
+    for(let y=-150;y<=150;y+=30){ctx.moveTo(-285,y);ctx.lineTo(285,y);}
+    ctx.stroke();
+    ctx.strokeStyle='#492544';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(-285,0);ctx.lineTo(285,0);ctx.moveTo(0,165);ctx.lineTo(0,-165);
+    ctx.stroke();
+    ctx.font='22px system-ui';
+    ctx.fillStyle='#492544';
+    ctx.fillText('x',292,7);ctx.fillText('y',9,-167);ctx.fillText('0',8,24);
+    const edge = Math.min(285,165/(Math.abs(n)||1));
+    ctx.strokeStyle='#9e3c25';
+    ctx.lineWidth=6;
+    ctx.beginPath();
+    ctx.moveTo(-edge,n*edge);ctx.lineTo(edge,-n*edge);
+    ctx.stroke();
+    ctx.restore();
+    const formula = n===0?'0':n===1?'x':n===-1?'−x':String(n).replace('-','−')+'x';
+    summary = 'y = '+formula+' · '+(n===0?'Horizontaal':n>0?'Stijgend':'Dalend');
+    slider.setAttribute('aria-valuetext','Helling '+n);
+  }
+  result.value = summary;
+}
+function selectMode(key){
+  active = key;
+  const mode = modes[key];
+  for(const name of ['title','text','note'])document.querySelector('#demo-'+name).textContent=mode[name];
+  document.querySelector('#slider-label').textContent=mode.label;
+  for(const name of ['min','max','value'])slider[name]=mode[name];
+  tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mode===key)));
+  render();
+}
+tabs.forEach(button=>button.addEventListener('click',()=>selectMode(button.dataset.mode)));
+slider.addEventListener('input',render);
+selectMode('shape');
+</script>
+</body>
+</html>
