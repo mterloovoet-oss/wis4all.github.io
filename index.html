@@ -8,7 +8,7 @@
 <style>
 :root{color-scheme:light;--ink:#302139;--paper:#fff9f1;--plum:#492544;--peach:#ffc9ad;--mint:#e3ebd4;--lavender:#e9ddf2;--rule:#dfd1d8}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.55 "DM Sans",system-ui,sans-serif}a{color:inherit}button,input{font:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #a34118;outline-offset:4px}
-.wrap{width:min(1140px,calc(100% - 3rem));margin:auto}header .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:76px}.brand{text-decoration:none;font-weight:850;font-size:1.55rem;letter-spacing:-.07em}.brand span{background:var(--plum);color:var(--paper);padding:.05em .34em .1em;border-radius:.43em;margin-left:.1em}nav{display:flex;gap:clamp(.75rem,3vw,2.4rem);font-weight:650;font-size:.94rem}nav a{text-underline-offset:5px}
+.wrap{width:min(1140px,calc(100% - 3rem));margin:auto}header .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:76px}.brand{text-decoration:none;font-weight:850;font-size:1.55rem;letter-spacing:-.07em}.brand span{background:var(--plum);color:var(--paper);padding:.05em .34em .1em;border-radius:.43em;margin-left:.1em}nav{display:flex;flex-wrap:wrap;gap:clamp(.75rem,3vw,2.4rem);font-weight:650;font-size:.94rem}nav a{text-underline-offset:5px}
 .hero{background:var(--plum);color:var(--paper);overflow:hidden}.hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:clamp(1.5rem,5vw,5rem);padding-block:clamp(3rem,8vw,7rem)}.intro{color:var(--peach);font-weight:750;margin:0 0 1rem}.hero h1,h2{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.055em;line-height:1;margin:0}.hero h1{font-size:clamp(3.15rem,6.5vw,6rem);max-width:10ch}.hero h1 em{color:var(--peach);font-weight:400}.hero .desc{max-width:36ch;margin:1.55rem 0;font-size:1.1rem}.cta{display:inline-block;padding:.75rem 1.2rem;background:var(--peach);color:var(--ink);border-radius:100px;font-weight:750;text-decoration:none}.cta:hover{background:#ffe0cc}
 .poster{position:relative;aspect-ratio:1;max-width:430px;width:100%;margin:auto;background-color:#fbd1ba;background-image:linear-gradient(#49254420 1px,transparent 1px),linear-gradient(90deg,#49254420 1px,transparent 1px);background-size:10% 10%;border-radius:50% 50% 1.5rem 1.5rem;overflow:hidden;color:var(--plum)}.poster span{position:absolute}.orbit{border:1px solid currentColor;border-radius:50%;width:68%;height:39%;top:31%;left:16%;transform:rotate(-42deg)}.orbit.second{transform:rotate(42deg)}.disc{width:38%;aspect-ratio:1;top:31%;left:31%;border-radius:50%;background:var(--plum);box-shadow:inset -15px -15px #2e1935}.dot{width:10%;aspect-ratio:1;top:22%;left:66%;border-radius:50%;background:var(--mint);border:1px solid var(--ink)}.pi{top:66%;left:14%;font:italic clamp(2rem,5vw,5rem)/1 Georgia}.star{top:12%;left:29%;font-size:clamp(1.4rem,4vw,3rem)}.root{right:11%;bottom:9%;font:italic 1.25rem Georgia}
 section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,4rem)}.lab p{margin:.65rem 0 0}.tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.4rem 0 .9rem}.tabs button{border:1px solid var(--plum);color:var(--plum);background:transparent;border-radius:100px;padding:.5rem 1rem;cursor:pointer;font-weight:700}.tabs button[aria-pressed=true]{background:var(--plum);color:white}.tabs button:hover:not([aria-pressed=true]){background:var(--lavender)}
@@ -19,7 +19,7 @@ section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,
 </style>
 </head>
 <body id="boven">
-<header><div class="wrap"><a class="brand" aria-label="Wis4All, naar boven" href="#boven">wis<span>4all</span></a><nav aria-label="Hoofdnavigatie"><a href="#ontdek">Ontdek</a><a href="#begrippen">Begrippen</a></nav></div></header>
+<header><div class="wrap"><a class="brand" aria-label="Wis4All, naar boven" href="#boven">wis<span>4all</span></a><nav aria-label="Hoofdnavigatie"><a href="#ontdek">Ontdek</a><a href="#begrippen">Begrippen</a><a href="./mavo-1/">MAVO 1</a></nav></div></header>
 <main>
 <div class="hero"><div class="wrap">
 <div><p class="intro">Wiskunde om te ontdekken</p><h1>‘Achter elk getal zit iets om <em>nieuwsgierig</em> naar te zijn.’</h1><p class="desc">Schuif, kijk wat er verandert en ontdek hoe vormen, breuken en grafieken werken.</p><a class="cta" href="#ontdek">Probeer het uit ↓</a></div>
@@ -41,6 +41,11 @@ section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,
 <details class="topics"><summary>Omtrek en oppervlakte</summary><p>De omtrek is de lengte langs de rand. De oppervlakte is de grootte van het vlak binnen die rand. Bij een rechthoek bereken je de oppervlakte met breedte × hoogte.</p></details>
 <details class="topics"><summary>Teller en noemer</summary><p>De noemer geeft aan in hoeveel gelijke stukken het geheel verdeeld is. De teller geeft aan hoeveel van die stukken je neemt.</p></details>
 <details class="topics"><summary>Een stijgende of dalende lijn</summary><p>In de formule y = ax geeft a aan hoeveel y verandert als x met 1 toeneemt. Bij a &gt; 0 stijgt de lijn, bij a &lt; 0 daalt ze en bij a = 0 loopt ze horizontaal.</p></details>
+</section>
+<section class="lab wrap" aria-labelledby="mavo-title">
+<h2 id="mavo-title">MAVO 1</h2>
+<p>Leer rekenen met negatieve getallen en bestuur daarna een onderwaterrobot.</p>
+<p><a class="cta" href="./mavo-1/">Naar MAVO 1 →</a></p>
 </section>
 </main>
 <footer><div class="wrap"><a class="brand" href="#boven">wis<span>4all</span></a><a href="#boven">Naar boven ↑</a></div></footer>

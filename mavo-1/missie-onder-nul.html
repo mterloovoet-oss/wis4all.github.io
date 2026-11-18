@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missie Onder Nul | Wis4All MAVO 1</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#081d2b;color:#edfafa;font:1rem/1.5 system-ui,sans-serif}main{margin:auto;max-width:1120px;padding:clamp(1rem,4vw,3rem)}a{color:#b7f4ee;text-underline-offset:.25em}h1{font:900 clamp(2.3rem,8vw,5.4rem)/1 system-ui;margin:.35em 0;letter-spacing:-.06em}h2{margin:0}.intro{max-width:62ch;color:#cbe0e6}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1rem;margin-top:1.5rem}.console,.water{border:1px solid #3a6776;border-radius:1rem;overflow:hidden}.console{background:#102f40;padding:clamp(1rem,3vw,2rem)}.water{position:relative;min-height:370px;background:linear-gradient(#16768a,#103f63 38%,#061b36);isolation:isolate}.water::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 39px,#d0ffff24 40px 41px);z-index:-1}.surface{position:absolute;left:0;right:0;top:13%;border-top:2px solid #a7f4ef;padding:.25rem .75rem;color:#fff;font-size:.9rem}.robot{position:absolute;left:50%;top:var(--position,45%);transform:translate(-50%,-50%);transition:top .55s ease;display:flex;align-items:center;gap:.55rem;background:#ffc76b;color:#162a30;border:3px solid #63421c;padding:.55rem 1rem;border-radius:40% 55% 55% 40%;font:800 1rem ui-monospace,monospace;white-space:nowrap;box-shadow:0 0 32px #ffdb7760}.robot::before{content:"";width:1.1rem;height:1.1rem;border:3px solid #26455a;border-radius:50%;background:#a7f4ef}.round{color:#b7f4ee;font-weight:750}.equation{font:800 clamp(1.45rem,4vw,2.5rem)/1.2 ui-monospace,monospace;margin:.65em 0}.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}button{font:inherit;font-weight:760;cursor:pointer;border:0;border-radius:.55rem;padding:.65rem;background:#b7f4ee;color:#102b37}button:disabled{cursor:default;opacity:.55}button:focus-visible,a:focus-visible{outline:3px solid #ffc76b;outline-offset:4px}.action{background:#ffc76b}.controls{display:flex;gap:.6rem;flex-wrap:wrap}.feedback{min-height:3em;color:#e3f6f6}progress{width:100%;accent-color:#ffc76b}.hint{color:#ffde9d} [hidden]{display:none!important}
+@media(max-width:680px){.layout{grid-template-columns:1fr}.water{min-height:230px}.console{order:-1}}
+@media(prefers-reduced-motion:reduce){.robot{transition:none}}
+</style>
+</head>
+<body><main>
+<a href="./">← MAVO 1</a>
+<h1>Missie Onder Nul</h1>
+<p class="intro">Bestuur een onderwaterrobot en verzamel acht metingen. Het wateroppervlak is 0 m. Onder water is je positie negatief. Kies bij elke opdracht waar de robot uitkomt.</p>
+<div class="layout">
+<div class="water" aria-label="Onderwaterpositie van de robot">
+<div class="surface">0 m · wateroppervlak</div>
+<div class="robot" id="robot"><span id="depth"></span></div>
+</div>
+<section class="console">
+<p id="round" class="round"></p>
+<progress id="progress" max="8" value="0" aria-label="Verzamelde metingen"></progress>
+<div id="mission">
+<h2 id="title" tabindex="-1"></h2>
+<p id="prompt"></p>
+<p id="equation" class="equation"></p>
+<div id="choices" class="choices" role="group" aria-label="Kies de positie"></div>
+</div>
+<p id="feedback" class="feedback" role="status"></p>
+<p id="hintText" class="hint" hidden></p>
+<div class="controls"><button id="hint" type="button">Geef een hint</button><button id="next" class="action" type="button" hidden>Volgende meting</button><button id="restart" type="button" hidden>Speel opnieuw</button></div>
+<noscript>Schakel JavaScript in om de robot te besturen.</noscript>
+</section>
+</div>
+</main>
+<script>
+const missions = [
+  [-2, '+', -3, 'Duik naar de zeebodem'],
+  [-5, '+', 2, 'Stijg naar de eerste sensor'],
+  [-3, '−', 4, 'Zoek het meetbaken'],
+  [-7, '−', -2, 'Draai een duik van 2 meter terug'],
+  [-5, '+', -4, 'Onderzoek het wrak'],
+  [-9, '−', -6, 'Draai een duik van 6 meter terug'],
+  [-3, '+', -3, 'Meet bij de rotswand'],
+  [-6, '−', -6, 'Draai de laatste duik terug']
+];
+const get = id => document.getElementById(id);
+const number = value => String(value).replace('-', '−');
+let index = 0;
+let firstTry = 0;
+let attempts = 0;
+let solved = false;
+
+function position(value) {
+  get('robot').style.setProperty('--position', (13 - value * 8) + '%');
+  get('depth').textContent = number(value) + ' m';
+}
+
+function render(focus = true) {
+  const [start, operator, change, title] = missions[index];
+  const movement = operator === '+' ? change : -change;
+  const answer = start + movement;
+  attempts = 0;
+  solved = false;
+  position(start);
+  get('round').textContent = 'Meting ' + (index + 1) + ' van ' + missions.length;
+  get('progress').value = index;
+  get('title').textContent = title;
+  get('prompt').textContent = 'Je staat op ' + number(start) + ' m. Wat wordt je nieuwe positie?';
+  const operand = change < 0 ? '(' + number(change) + ')' : number(change);
+  get('equation').textContent = number(start) + ' ' + operator + ' ' + operand + ' = ?';
+  get('feedback').textContent = '';
+  get('hintText').hidden = true;
+  get('hintText').textContent = 'Begin op ' + number(start) + '. Ga ' + Math.abs(movement) + ' meter ' + (movement < 0 ? 'omlaag' : 'omhoog') + '.';
+  get('hint').hidden = false;
+  get('next').hidden = true;
+  get('next').textContent = index === missions.length - 1 ? 'Bekijk je resultaat' : 'Volgende meting';
+  get('restart').hidden = true;
+  get('mission').hidden = false;
+  const distractor = start - movement > 0 ? answer - 2 : start - movement;
+  const options = [answer, distractor, start].sort((a,b) => a-b);
+  const choices = get('choices');
+  choices.replaceChildren();
+  for (const value of options) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = number(value) + ' m';
+    button.addEventListener('click', () => {
+      if (solved) return;
+      attempts++;
+      if (value !== answer) {
+        get('feedback').textContent = number(value) + ' m klopt nog niet. Kijk naar het rekenteken én het teken van het tweede getal.';
+        return;
+      }
+      solved = true;
+      if (attempts === 1) firstTry++;
+      position(answer);
+      get('progress').value = index + 1;
+      get('feedback').textContent = 'Meting binnen. ' + get('equation').textContent.replace('?', number(answer)) + ' m.';
+      get('hint').hidden = true;
+      get('next').hidden = false;
+      for (const option of choices.children) option.disabled = true;
+      get('next').focus();
+    });
+    choices.append(button);
+  }
+  if (focus) get('title').focus();
+}
+
+get('hint').addEventListener('click', () => { get('hintText').hidden = false; });
+get('next').addEventListener('click', () => {
+  index++;
+  if (index < missions.length) { render(); return; }
+  get('mission').hidden = true;
+  get('next').hidden = true;
+  get('hintText').hidden = true;
+  get('round').textContent = 'Missie geslaagd';
+  get('feedback').textContent = 'Alle acht metingen zijn binnen. Je had ' + firstTry + ' van de 8 meteen goed.';
+  get('restart').hidden = false;
+  get('restart').focus();
+});
+get('restart').addEventListener('click', () => { index = 0; firstTry = 0; render(); });
+render(false);
+</script>
+</body>
+</html>
