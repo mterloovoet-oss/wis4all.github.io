@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bordles negatieve getallen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+/* Plan: één fase per scherm voor het digibord; vaste kop met fasen + timer; blauw = koud/negatief, rood = warm/positief, amber = de bewerking (aftrekmin). Eén licht thema, gekozen voor projectie. */
+:root{
+  --ink:#13233a;
+  --paper:#f3f7fa;
+  --ice:#dceaf3;
+  --cold:#1d64a8;
+  --warm:#c93c22;
+  --op:#a86a0c;
+  --line:#a9bfcf;
+  --white:#ffffff;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:21px;line-height:1.45;font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--cold);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h2{font-size:2.1rem;font-weight:800}
+h3{font-size:1.3rem;font-weight:600}
+p{margin:0}
+
+/* Kop */
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--white);padding:10px 16px;display:grid;gap:8px}
+.toprow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:1.1rem;margin-right:auto}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:.75rem;opacity:.75}
+.timer{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:10px;padding:4px 6px 4px 12px}
+.timer output{font-size:1.5rem;font-weight:700;min-width:4.2ch;text-align:right}
+.timer.done output{color:#ffb4a4}
+.tbtn{background:rgba(255,255,255,.14);border:0;border-radius:8px;padding:4px 10px;font-size:.85rem;color:var(--white)}
+.tbtn[aria-pressed="true"]{background:var(--white);color:var(--ink)}
+.phases{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.phases button{flex:1 0 auto;border:0;border-radius:8px;padding:6px 12px;background:rgba(255,255,255,.1);color:var(--white);font-size:.85rem;text-align:left;line-height:1.2}
+.phases button span{display:block;opacity:.7;font-size:.75rem}
+.phases button[aria-current="step"]{background:var(--white);color:var(--ink)}
+.phases button.seen:not([aria-current]){background:rgba(255,255,255,.2)}
+
+main{max-width:1180px;margin:0 auto;padding:24px 16px 80px}
+section.fase{display:none;gap:22px}
+section.fase.active{display:grid}
+.lead{font-size:1.2rem;max-width:62ch}
+.eyebrow{font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cold)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;align-items:start}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px}
+.panel.ice{background:var(--ice);border-color:transparent}
+.goal{border-left:6px solid var(--cold);background:var(--white);padding:14px 18px;border-radius:0 12px 12px 0;font-size:1.15rem}
+.goal b{color:var(--cold)}
+
+/* Knoppen voor hints en antwoorden */
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{border:2px solid var(--ink);background:var(--white);border-radius:10px;padding:6px 14px;font-weight:700;font-size:.95rem}
+.btn.hint{border-color:var(--op);color:var(--op)}
+.btn.ans{background:var(--ink);color:var(--white)}
+.btn.soft{border-color:var(--line)}
+.btn[aria-expanded="true"]{opacity:.55}
+.reveal{display:none;border-radius:10px;padding:10px 14px;font-size:1.05rem}
+.reveal.open{display:block}
+.reveal.hint{background:#fbf1de;border-left:5px solid var(--op)}
+.reveal.ans{background:#e3f1e6;border-left:5px solid #2f7d45}
+
+/* Docentnotities */
+.notes{display:none;background:#fff8e6;border:2px dashed var(--op);border-radius:12px;padding:14px 18px;font-size:.92rem}
+.notes h3{font-size:1rem;color:var(--op);margin-bottom:4px}
+.notes ul{margin:6px 0 0;padding-left:20px}
+body.show-notes .notes{display:block}
+
+/* Fase 1 */
+.qlist{display:grid;gap:16px;counter-reset:q}
+.q{display:grid;gap:8px}
+.q > p{font-size:1.15rem}
+.q > p::before{counter-increment:q;content:counter(q) ". ";font-weight:700;color:var(--cold)}
+.thermo-wrap{display:flex;justify-content:center}
+.ddu{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Fase 2 */
+.where{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.where div{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:14px}
+.where strong{display:block;font-family:var(--display);font-size:2rem;color:var(--cold)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{min-height:130px;border:2px solid var(--ink);border-radius:12px;background:var(--white);padding:14px;text-align:left;display:grid;align-content:center;gap:6px}
+.card .front{font-family:var(--display);font-weight:600;font-size:1.25rem}
+.card .back{display:none;font-size:.95rem}
+.card.flipped{background:var(--ice);border-color:var(--cold)}
+.card.flipped .back{display:block}
+.card .tap{font-size:.75rem;color:#5b6f82}
+.card.flipped .tap{display:none}
+.nm{color:var(--cold);font-weight:700}
+.am{color:var(--op);font-weight:700}
+body.mark-min .nm{outline:3px solid var(--cold);border-radius:999px;padding:0 3px;margin:0 4px 0 2px}
+body.mark-min .am{outline:3px solid var(--op);border-radius:6px;padding:0 3px;margin:0 4px}
+
+/* Getallenlijn */
+.nl{width:100%;height:auto;display:block}
+.nl text{font-family:var(--body);fill:var(--ink)}
+.nlctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:1.1rem}
+.nlctrl input,.nlctrl select{font:inherit;width:5.5ch;padding:4px 6px;border:2px solid var(--ink);border-radius:8px;text-align:center;background:var(--white)}
+.nlctrl select{width:auto}
+.big{font-size:2.2rem;font-weight:700;font-family:var(--display)}
+.rule{display:flex;gap:18px;flex-wrap:wrap;font-size:1.25rem}
+.rule span{background:var(--white);border:2px solid var(--line);border-radius:10px;padding:6px 14px}
+
+.picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.pick{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;justify-items:center;align-content:start}
+.plabel{font-weight:700;font-size:1.05rem}
+.phint{font-size:.8rem;color:#5b6f82}
+.stepper{display:flex;align-items:center;gap:8px}
+.sbtn{width:64px;height:64px;border-radius:12px;border:2px solid var(--ink);background:var(--white);font-size:1.4rem;font-weight:700}
+.sbtn:active{background:var(--ice)}
+.sval{min-width:3.2ch;text-align:center;font-family:var(--display);font-size:2.6rem;font-weight:800}
+.ops{display:flex;gap:10px}
+.opbtn{width:96px;height:80px;border-radius:12px;border:3px solid var(--line);background:var(--white);font-family:var(--display);font-size:2.4rem;font-weight:800;line-height:1;display:grid;place-items:center;padding:4px}
+.opbtn small{font-family:var(--body);font-size:.7rem;font-weight:400}
+.opbtn.plus{color:var(--warm)}
+.opbtn.min{color:var(--cold)}
+.opbtn.plus[aria-pressed="true"]{border-color:var(--warm);background:#fbe4de}
+.opbtn.min[aria-pressed="true"]{border-color:var(--cold);background:#dcebf7}
+.gobtn{font-size:1.4rem;padding:16px 30px}
+.nlsum{text-align:center;min-height:1.3em}
+.nl .tick{cursor:pointer}
+.nl .tick:hover rect{fill:var(--ice)}
+
+/* Fase 4 */
+.rows{font-size:1.6rem;display:grid;gap:4px;font-weight:700}
+.rows .r{display:grid;grid-template-columns:7ch 1.2ch 3ch 1fr;align-items:center;gap:8px}
+.rows .r .res{color:var(--cold);min-width:2ch}
+.rows .r .res.hidden{color:transparent;border-bottom:3px dotted var(--line)}
+.rows .r .diff{font-size:.85rem;font-weight:400;color:#5b6f82}
+.law{font-family:var(--display);font-size:1.6rem;font-weight:800;padding:10px 14px;border-radius:10px;background:var(--ink);color:var(--white);display:none}
+.law.open{display:block}
+.steps{margin:0;padding-left:28px;font-size:1.15rem;display:grid;gap:6px}
+.steps li::marker{font-weight:700;color:var(--cold)}
+.worked{display:grid;gap:10px}
+.we{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.we .tag{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#5b6f82;grid-column:1/-1}
+.we .lbl{font-size:.85rem;color:#5b6f82}
+.we .m{font-size:1.45rem;font-weight:700}
+.blank{display:inline-block;min-width:2.2ch;border-bottom:3px solid var(--op);text-align:center;color:transparent;cursor:pointer}
+.blank.shown{color:var(--op)}
+
+/* Fase 5 */
+.wb{display:grid;gap:18px;justify-items:center;text-align:center}
+.wb .som{font-family:var(--display);font-size:clamp(3rem,9vw,6.5rem);font-weight:800;line-height:1}
+.wb .count{font-size:.9rem;color:#5b6f82}
+.dots{display:flex;gap:6px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--line);display:block}
+.dots i.on{background:var(--cold)}
+.wbnav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.wb .reveal{text-align:left;width:min(760px,100%)}
+.go{font-family:var(--display);font-size:2.4rem;font-weight:800;color:var(--warm);min-height:1.2em}
+
+/* Fase 6 */
+.code{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.code ol{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:1.3rem;font-weight:700}
+.code li{display:flex;justify-content:space-between;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.code li em{font-style:normal;color:var(--cold);min-width:5ch;text-align:right}
+.ctable{overflow-x:auto}
+.ctable table{border-collapse:collapse;width:100%;font-size:1.05rem;text-align:center}
+.ctable td,.ctable th{border:1px solid var(--line);padding:6px 4px;min-width:3ch}
+.ctable th{background:var(--ice)}
+.word{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.word span{width:2.4em;height:2.6em;border:3px solid var(--ink);border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;font-weight:800;background:var(--white)}
+.word span.on{background:var(--cold);color:var(--white);border-color:var(--cold)}
+.hcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+
+/* Fase 7 */
+.exit{display:grid;gap:14px;font-size:1.3rem}
+.smileys{display:flex;gap:14px;flex-wrap:wrap}
+.smileys div{border:2px solid var(--line);border-radius:12px;padding:10px 16px;background:var(--white);font-size:1rem;display:grid;gap:4px}
+.smileys b{font-size:1.1rem}
+
+.foot{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+@media (max-width:640px){
+  body{font-size:18px}
+  .code{grid-template-columns:1fr}
+  .rows .r{grid-template-columns:6ch 1ch 3ch 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="toprow">
+    <div class="brand">Optellen en aftrekken met negatieve getallen<small>Vmbo-bbl klas 1 · bordles 50 minuten</small></div>
+    <div class="timer" id="timer" aria-label="Timer">
+      <output id="tOut">5:00</output>
+      <button class="tbtn" id="tStart" type="button">Start</button>
+      <button class="tbtn" id="tReset" type="button">Opnieuw</button>
+    </div>
+    <button class="tbtn" id="notesBtn" type="button" aria-pressed="false">Docentnotities (D)</button>
+  </div>
+  <nav class="phases" id="phases" aria-label="Fasen van de les"></nav>
+</header>
+
+<main>
+
+<!-- FASE 1 -->
+<section class="fase" id="fase-1" data-min="5" data-name="Denkopdracht">
+  <div>
+    <p class="eyebrow">Fase 1 · Denkopdracht · 5 minuten</p>
+    <h2>Koud in de supermarkt</h2>
+  </div>
+  <p class="lead">Je loopt stage in een supermarkt. In de <b>koelcel</b> is het 4 °C. In de <b>vriescel</b> is het −18 °C. Denk eerst alleen na. Daarna bespreek je het met je buur.</p>
+  <div class="ddu">
+    <button class="btn soft" type="button" data-timer="60">Denk alleen · 1 min</button>
+    <button class="btn soft" type="button" data-timer="60">Deel met je buur · 1 min</button>
+    <button class="btn soft" type="button" data-timer="150">Uitwisselen · 2,5 min</button>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="qlist">
+        <div class="q">
+          <p>Zet in volgorde van koud naar warm: &nbsp;4 &nbsp;&nbsp;−18 &nbsp;&nbsp;0 &nbsp;&nbsp;−2 &nbsp;&nbsp;7</p>
+          <div class="actions"><button class="btn hint" type="button" data-show="h11">Hint</button><button class="btn ans" type="button" data-show="a11">Antwoord</button></div>
+          <div class="reveal hint" id="h11">Denk aan de getallenlijn: hoe verder naar links, hoe kouder.</div>
+          <div class="reveal ans" id="a11">−18, −2, 0, 4, 7</div>
+        </div>
+        <div class="q">
+          <p>Hoeveel graden is het verschil tussen de koelcel en de vriescel?</p>
+          <div class="actions"><button class="btn hint" type="button" data-show="h12">Hint</button><button class="btn ans" type="button" data-show="a12">Antwoord</button></div>
+          <div class="reveal hint" id="h12">Tel eerst van −18 naar 0. Tel daarna van 0 naar 4. Tel de twee stukken op.</div>
+          <div class="reveal ans" id="a12">18 + 4 = <b>22 graden</b></div>
+        </div>
+        <div class="q">
+          <p>Uitdaging: de deur van de vriescel blijft open staan. Het wordt 5 graden warmer. Hoe warm is het dan?</p>
+          <div class="actions"><button class="btn hint" type="button" data-show="h13">Hint</button><button class="btn ans" type="button" data-show="a13">Antwoord</button></div>
+          <div class="reveal hint" id="h13">Warmer is omhoog op de thermometer. Op de getallenlijn is dat naar rechts.</div>
+          <div class="reveal ans" id="a13">−18 + 5 = <b>−13 °C</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel ice thermo-wrap">
+      <svg viewBox="0 0 260 420" width="260" role="img" aria-label="Thermometer van −25 tot 10 graden met koelcel op 4 en vriescel op −18">
+        <g id="thermo"></g>
+      </svg>
+    </div>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Doel: voorkennis uit par. 2.1 en 2.2 ophalen (ordenen, temperatuurverschil, −6 + 4).</li>
+      <li>Geef beurten zonder vingers. Vraag na elk antwoord: <i>hoe weet je dat?</i></li>
+      <li>Klik hints pas als de klas vastloopt. Vraag 3 is een opstap naar vandaag.</li>
+      <li>Let op: zegt iemand bij vraag 2 "14"? Dan is 18 − 4 gedaan. Laat het stuk boven en onder 0 apart tellen.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- FASE 2 -->
+<section class="fase" id="fase-2" data-min="3" data-name="Doel en woorden">
+  <div>
+    <p class="eyebrow">Fase 2 · Leerdoel en woorden · 3 minuten</p>
+    <h2>Wat leer je vandaag?</h2>
+  </div>
+  <p class="goal"><b>Leerdoel:</b> je kunt optellen en aftrekken met negatieve getallen. Ook als er twee tekens naast elkaar staan, zoals in 5 + −8.</p>
+  <h3>Waar kom je negatieve getallen tegen?</h3>
+  <div class="where">
+    <div><strong>−18 °C</strong>De vriescel in de supermarkt</div>
+    <div><strong>−1</strong>De knop voor de kelder in de lift</div>
+    <div><strong>−€ 20</strong>Je staat rood op je bankrekening</div>
+    <div><strong>−3</strong>Het doelsaldo van een voetbalclub</div>
+  </div>
+  <h3>Woorden die je nodig hebt <span style="font-weight:400;font-size:.9rem">(tik op een kaart)</span></h3>
+  <div class="cards" id="cards"></div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Laat een leerling het leerdoel hardop voorlezen.</li>
+      <li>Besteed de meeste tijd aan de kaarten <b>negatiefmin</b> en <b>aftrekmin</b>. Dat verschil is de sleutel voor fase 4.</li>
+      <li>Laat sommen hardop lezen: −6 + 4 is "min zes plus vier".</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- FASE 3 -->
+<section class="fase" id="fase-3" data-min="7" data-name="Getallenlijn">
+  <div>
+    <p class="eyebrow">Fase 3 · Herhaling · 7 minuten</p>
+    <h2>Rekenen op de getallenlijn</h2>
+  </div>
+  <div class="rule"><span><b style="color:var(--warm)">+</b> is naar rechts</span><span><b style="color:var(--cold)">−</b> is naar links</span></div>
+  <div class="panel">
+    <div class="picker">
+      <div class="pick">
+        <span class="plabel">1. Begin bij</span>
+        <div class="stepper">
+          <button class="sbtn" type="button" data-adj="start,-1" aria-label="Startgetal 1 lager">&minus;1</button>
+          <output class="sval" id="vStart">&minus;6</output>
+          <button class="sbtn" type="button" data-adj="start,1" aria-label="Startgetal 1 hoger">+1</button>
+        </div>
+        <span class="phint">of tik op een getal op de lijn</span>
+      </div>
+      <div class="pick">
+        <span class="plabel">2. Kies het teken</span>
+        <div class="ops" role="group" aria-label="Teken">
+          <button class="opbtn plus" type="button" data-op="+" aria-pressed="true">+<small>naar rechts</small></button>
+          <button class="opbtn min" type="button" data-op="-" aria-pressed="false">&minus;<small>naar links</small></button>
+        </div>
+      </div>
+      <div class="pick">
+        <span class="plabel">3. Hoeveel stappen?</span>
+        <div class="stepper">
+          <button class="sbtn" type="button" data-adj="n,-1" aria-label="1 stap minder">&minus;1</button>
+          <output class="sval" id="vN">4</output>
+          <button class="sbtn" type="button" data-adj="n,1" aria-label="1 stap meer">+1</button>
+        </div>
+      </div>
+      <div class="pick">
+        <span class="plabel">4. Spring!</span>
+        <button class="btn ans gobtn" id="nlGo" type="button">Spring</button>
+      </div>
+    </div>
+    <p class="big nlsum" id="nlRes" aria-live="polite"></p>
+    <svg class="nl" id="nl3" viewBox="0 0 1000 150" role="img" aria-label="Getallenlijn van −15 tot 15"></svg>
+    <div class="actions">
+      <span style="font-size:.95rem;align-self:center">Snel kiezen:</span>
+      <button class="btn soft" type="button" data-nl="-6,+,4">−6 + 4</button>
+      <button class="btn soft" type="button" data-nl="-6,-,2">−6 − 2</button>
+      <button class="btn soft" type="button" data-nl="-3,+,7">−3 + 7</button>
+      <button class="btn soft" type="button" data-nl="2,-,9">2 − 9</button>
+      <button class="btn soft" type="button" data-nl="-5,-,4">−5 − 4</button>
+    </div>
+  </div>
+  <div class="panel ice">
+    <h3>Zo denk je hardop</h3>
+    <p>"Ik begin bij <b>min zes</b>. Er staat <b>plus</b>, dus ik ga naar <b>rechts</b>. Ik ga <b>vier</b> stappen. Ik kom uit op <b>min twee</b>."</p>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Doe −6 + 4 en −6 − 2 zelf voor en denk hardop (zie blauw vak).</li>
+      <li>Laat daarna een leerling het hardop denken overnemen bij −3 + 7 (4), 2 − 9 (−7) en −5 − 4 (−9).</li>
+      <li>Veelgemaakte fout: −5 − 4 = −1. De leerling trekt de getallen van elkaar af. Laat de sprong zien.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- FASE 4 -->
+<section class="fase" id="fase-4" data-min="10" data-name="Twee tekens">
+  <div>
+    <p class="eyebrow">Fase 4 · Nieuw · 10 minuten</p>
+    <h2>Twee tekens naast elkaar</h2>
+  </div>
+  <p class="lead">Wat doe je met 3 + −2 of 3 − −2? Kijk naar de rijtjes. Voorspel steeds de volgende uitkomst.</p>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Rijtje A · een negatief getal <span style="color:var(--warm)">optellen</span></h3>
+      <div class="rows" id="rowA"></div>
+      <div class="actions"><button class="btn ans" type="button" data-row="A">Volgende uitkomst</button><button class="btn soft" type="button" data-law="lawA">Wat valt op?</button></div>
+      <div class="law" id="lawA">+ − is hetzelfde als −</div>
+      <p style="font-size:.95rem">Er komt kou bij, dus het wordt kouder.</p>
+    </div>
+    <div class="panel">
+      <h3>Rijtje B · een negatief getal <span style="color:var(--cold)">aftrekken</span></h3>
+      <div class="rows" id="rowB"></div>
+      <div class="actions"><button class="btn ans" type="button" data-row="B">Volgende uitkomst</button><button class="btn soft" type="button" data-law="lawB">Wat valt op?</button></div>
+      <div class="law" id="lawB">− − is hetzelfde als +</div>
+      <p style="font-size:.95rem">Je haalt kou weg, dus het wordt warmer.</p>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel ice">
+      <h3>Stappenplan</h3>
+      <ol class="steps">
+        <li>Staan er twee tekens naast elkaar?</li>
+        <li>Maak er één teken van: <b>+ −</b> wordt <b>−</b> en <b>− −</b> wordt <b>+</b>.</li>
+        <li>Reken uit met de getallenlijn.</li>
+      </ol>
+      <button class="btn soft" type="button" id="markBtn" aria-pressed="false">Toon welke min welke is</button>
+      <p style="font-size:.9rem"><span class="nm">blauw</span> = negatiefmin (hoort bij het getal) · <span class="am">amber</span> = aftrekmin (de bewerking)</p>
+    </div>
+    <div class="panel">
+      <h3>Voorbeelden <span style="font-weight:400;font-size:.9rem">(tik op een streepje om het te tonen)</span></h3>
+      <div class="worked" id="worked"></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Klik per regel. Vraag vóór elke klik: wat wordt het? Laat de klas het patroon benoemen (telkens 1 minder / 1 meer).</li>
+      <li>Zet daarna "Toon welke min welke is" aan en wijs bij de voorbeelden elke min aan.</li>
+      <li>Voorbeeld 1 en 2 zijn helemaal uitgewerkt. Bij 3 en 4 vult de klas teken en uitkomst in. Voorbeeld 5 doen ze alleen op het wisbordje.</li>
+      <li>Benadruk stap 1: alleen omzetten als de tekens <b>naast elkaar</b> staan. −3 − 5 blijft −3 − 5 = −8.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- FASE 5 -->
+<section class="fase" id="fase-5" data-min="7" data-name="Wisbordjes">
+  <div>
+    <p class="eyebrow">Fase 5 · Samen oefenen · 7 minuten</p>
+    <h2>Wisbordjes omhoog</h2>
+  </div>
+  <p class="lead">Schrijf het antwoord op je wisbordje. Houd het pas omhoog als je "nu" hoort.</p>
+  <div class="panel wb">
+    <div class="dots" id="wbDots" aria-hidden="true"></div>
+    <div class="count" id="wbCount"></div>
+    <div class="som" id="wbSom"></div>
+    <div class="go" id="wbGo" aria-live="polite"></div>
+    <div class="wbnav">
+      <button class="btn soft" type="button" id="wbPrev">Vorige som</button>
+      <button class="btn" type="button" id="wbNow">3 · 2 · 1 · nu!</button>
+      <button class="btn hint" type="button" id="wbH1">Hint 1: het teken</button>
+      <button class="btn hint" type="button" id="wbH2">Hint 2: getallenlijn</button>
+      <button class="btn ans" type="button" id="wbA">Antwoord</button>
+      <button class="btn soft" type="button" id="wbNext">Volgende som</button>
+    </div>
+    <div class="reveal hint" id="wbH1t"></div>
+    <div class="reveal hint" id="wbH2t"><p id="wbH2p"></p><svg class="nl" id="nl5" viewBox="0 0 1000 150" role="img" aria-label="Getallenlijn bij deze som"></svg></div>
+    <div class="reveal ans" id="wbAt"></div>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul id="wbNote"></ul>
+  </aside>
+</section>
+
+<!-- FASE 6 -->
+<section class="fase" id="fase-6" data-min="12" data-name="Codekraker">
+  <div>
+    <p class="eyebrow">Fase 6 · Samenwerken in tweetallen · 12 minuten</p>
+    <h2>Codekraker: open de vriescel</h2>
+  </div>
+  <p class="lead">Leerling A maakt A1 tot en met A4. Leerling B maakt B1 tot en met B4. Zoek bij elk antwoord de letter in de codetabel. Samen vinden jullie het woord. Daarna controleer je elkaars sommen.</p>
+  <div class="grid2">
+    <div class="panel">
+      <div class="code">
+        <div><h3>Leerling A</h3><ol id="codeA"></ol></div>
+        <div><h3>Leerling B</h3><ol id="codeB"></ol></div>
+      </div>
+      <div class="ctable">
+        <table aria-label="Codetabel">
+          <tbody id="ctab"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel ice">
+      <h3>Vast? Pak eerst een hintkaart</h3>
+      <div class="hcards">
+        <div class="q"><button class="btn hint" type="button" data-show="hk1">Hintkaart 1 · tekens</button><div class="reveal hint" id="hk1">Staan er twee tekens naast elkaar? + − wordt −. − − wordt +. Schrijf de som opnieuw op met één teken.</div></div>
+        <div class="q"><button class="btn hint" type="button" data-show="hk2">Hintkaart 2 · getallenlijn</button><div class="reveal hint" id="hk2">Zet een stip bij het eerste getal. Plus: ga naar rechts. Min: ga naar links. Tel de stappen.</div></div>
+        <div class="q"><button class="btn hint" type="button" data-show="hk3">Hintkaart 3 · letter klopt niet</button><div class="reveal hint" id="hk3">Past je letter niet in het woord? Dan zit er een fout in die som. Laat je maatje meekijken bij stap 1 en stap 2.</div></div>
+      </div>
+      <h3>Klaar?</h3>
+      <p>Plusopdracht: bedenk zelf een som met twee tekens naast elkaar. De uitkomst moet −1 zijn. Laat je maatje hem oplossen.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Het woord</h3>
+    <div class="word" id="word"></div>
+    <div class="actions" style="justify-content:center">
+      <button class="btn" type="button" id="wordNext">Volgende letter</button>
+      <button class="btn ans" type="button" id="wordAll">Toon alle antwoorden</button>
+    </div>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Deel het kopieerblad uit (1 per tweetal). Het woord is IJSBEREN.</li>
+      <li>Foute antwoorden geven een letter uit de tabel die niet in het woord past. Dat is directe feedback.</li>
+      <li>Leerlingen gebruiken eerst de hintkaarten (1 → 2 → 3) en roepen pas daarna jou.</li>
+      <li>Werk zelf aan de instructietafel met wie bij de wisbordjes nog fout zat (som 6–8).</li>
+      <li>Toon het woord pas aan het eind, letter voor letter, en vraag tweetallen hun som uit te leggen.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- FASE 7 -->
+<section class="fase" id="fase-7" data-min="6" data-name="Afsluiten">
+  <div>
+    <p class="eyebrow">Fase 7 · Afsluiten · 6 minuten</p>
+    <h2>Exit ticket</h2>
+  </div>
+  <p class="goal"><b>Leerdoel:</b> je kunt optellen en aftrekken met negatieve getallen. Laat zien wat je kunt. Werk alleen.</p>
+  <div class="panel exit">
+    <div class="q"><p>1. &nbsp;−4 + 9 = ?</p><div class="reveal ans" id="e1">5</div></div>
+    <div class="q"><p>2. &nbsp;3 + −8 = ?</p><div class="reveal ans" id="e2">3 − 8 = −5</div></div>
+    <div class="q"><p>3. &nbsp;−6 − −10 = ?</p><div class="reveal ans" id="e3">−6 + 10 = 4</div></div>
+    <div class="q"><p>4. &nbsp;Waarom is 5 − −2 meer dan 5? Leg uit in één zin.</p><div class="reveal ans" id="e4">Je haalt een negatief getal weg. Dat is hetzelfde als er 2 bij doen: 5 − −2 = 5 + 2 = 7.</div></div>
+    <div class="actions"><button class="btn ans" type="button" id="exitAns">Toon antwoorden (na het inleveren)</button></div>
+  </div>
+  <div class="panel ice">
+    <h3>Hoe ging het? Kleur één smiley op je ticket.</h3>
+    <div class="smileys">
+      <div><b>Ik kan het</b>Volgende les: plusopgaven 50, 52 en 54–56.</div>
+      <div><b>Bijna</b>Maak opgave 42, 43, 49 en 51. Gebruik het stappenplan.</div>
+      <div><b>Nog niet</b>Volgende les begin je aan de instructietafel.</div>
+    </div>
+    <p><b>Volgende les:</b> sommen met meer dan twee getallen, zoals −3 + 5 − −2.</p>
+  </div>
+  <aside class="notes">
+    <h3>Docentnotities</h3>
+    <ul>
+      <li>Leerlingen maken het ticket zonder hulp en zonder hints.</li>
+      <li>Kijk na de les na. Fout bij vraag 2 of 3? Dan is stap 2 van het stappenplan nog niet geland: herhaal aan de instructietafel.</li>
+      <li>Vraag 4 laat zien of leerlingen de regel begrijpen of alleen het trucje kennen.</li>
+    </ul>
+  </aside>
+</section>
+
+<div class="foot">
+  <button class="btn soft" type="button" id="prevPhase">Vorige fase</button>
+  <button class="btn ans" type="button" id="nextPhase">Volgende fase</button>
+</div>
+</main>
+
+<script>
+(function(){
+const M = "−"; // echt minteken
+const fmt = n => (n<0 ? M + Math.abs(n) : String(n));
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ---------- Fasen en navigatie ---------- */
+const fases = $$("section.fase");
+const nav = $("#phases");
+let start = 0;
+fases.forEach((f,i)=>{
+  const b = document.createElement("button");
+  b.type="button";
+  const mins = +f.dataset.min;
+  b.innerHTML = (i+1)+". "+f.dataset.name+"<span>"+start+"–"+(start+mins)+" min</span>";
+  start += mins;
+  b.addEventListener("click",()=>go(i));
+  nav.appendChild(b);
+});
+let cur = 0;
+function go(i, fromHash){
+  i = Math.max(0, Math.min(fases.length-1, i));
+  cur = i;
+  fases.forEach((f,j)=>f.classList.toggle("active", j===i));
+  $$("#phases button").forEach((b,j)=>{
+    if(j===i){ b.setAttribute("aria-current","step"); b.classList.add("seen"); }
+    else b.removeAttribute("aria-current");
+  });
+  setTimer(+fases[i].dataset.min*60);
+  if(!fromHash){ try{ history.replaceState(null,"","#"+fases[i].id); }catch(e){ location.hash = fases[i].id; } }
+  window.scrollTo({top:0});
+}
+$("#prevPhase").addEventListener("click",()=>go(cur-1));
+$("#nextPhase").addEventListener("click",()=>go(cur+1));
+function fromHash(){
+  const h = location.hash.replace("#","");
+  const i = fases.findIndex(f=>f.id===h);
+  go(i>=0?i:0, true);
+}
+window.addEventListener("hashchange", fromHash);
+
+/* ---------- Timer ---------- */
+let left = 300, iv = null;
+const tOut = $("#tOut"), tStart = $("#tStart"), timerEl = $("#timer");
+function show(){ const m=Math.floor(left/60), s=left%60; tOut.textContent = m+":"+String(s).padStart(2,"0"); timerEl.classList.toggle("done", left===0); }
+function stop(){ clearInterval(iv); iv=null; tStart.textContent="Start"; }
+function setTimer(sec){ stop(); left = sec; show(); }
+tStart.addEventListener("click",()=>{
+  if(iv){ stop(); return; }
+  if(left===0) return;
+  tStart.textContent="Pauze";
+  iv = setInterval(()=>{ left--; show(); if(left<=0){ left=0; show(); stop(); } },1000);
+});
+$("#tReset").addEventListener("click",()=>setTimer(+fases[cur].dataset.min*60));
+$$("[data-timer]").forEach(b=>b.addEventListener("click",()=>{ setTimer(+b.dataset.timer); tStart.click(); }));
+
+/* ---------- Docentnotities ---------- */
+const notesBtn = $("#notesBtn");
+function toggleNotes(){ const on = document.body.classList.toggle("show-notes"); notesBtn.setAttribute("aria-pressed", on); }
+notesBtn.addEventListener("click", toggleNotes);
+document.addEventListener("keydown", e=>{
+  if(e.target.matches("input,select,textarea")) return;
+  if(e.key==="d"||e.key==="D") toggleNotes();
+  if(e.key==="ArrowRight" && e.altKey) go(cur+1);
+  if(e.key==="ArrowLeft" && e.altKey) go(cur-1);
+});
+
+/* ---------- Hints en antwoorden ---------- */
+$$("[data-show]").forEach(b=>{
+  b.setAttribute("aria-expanded","false");
+  b.addEventListener("click",()=>{
+    const el = document.getElementById(b.dataset.show);
+    const open = el.classList.toggle("open");
+    b.setAttribute("aria-expanded", open);
+  });
+});
+
+/* ---------- Thermometer ---------- */
+(function(){
+  const g = $("#thermo"); const top=30, bot=360, lo=-25, hi=10;
+  const y = v => bot - (v-lo)/(hi-lo)*(bot-top);
+  let s = '<rect x="96" y="'+(top-12)+'" width="28" height="'+(bot-top+30)+'" rx="14" fill="#fff" stroke="#13233a" stroke-width="3"/>';
+  s += '<circle cx="110" cy="'+(bot+30)+'" r="22" fill="#1d64a8" stroke="#13233a" stroke-width="3"/>';
+  s += '<rect x="103" y="'+y(-18)+'" width="14" height="'+(bot+16-y(-18))+'" fill="#1d64a8"/>';
+  for(let v=lo; v<=hi; v++){
+    const yy=y(v), major=v%5===0;
+    s += '<line x1="'+(major?78:86)+'" x2="96" y1="'+yy+'" y2="'+yy+'" stroke="#13233a" stroke-width="'+(major?2:1)+'"/>';
+    if(major) s += '<text x="72" y="'+(yy+6)+'" text-anchor="end" font-size="17" fill="#13233a" font-family="Atkinson Hyperlegible, Verdana">'+(v<0?"−"+(-v):v)+'</text>';
+  }
+  const mark=(v,label,col)=>{ const yy=y(v); return '<line x1="124" x2="146" y1="'+yy+'" y2="'+yy+'" stroke="'+col+'" stroke-width="3"/><text x="152" y="'+(yy+6)+'" font-size="17" font-weight="700" fill="'+col+'" font-family="Atkinson Hyperlegible, Verdana">'+label+'</text>'; };
+  s += mark(4,"koelcel 4 °C","#c93c22") + mark(-18,"vriescel −18 °C","#1d64a8");
+  s += '<text x="110" y="16" text-anchor="middle" font-size="15" fill="#13233a" font-family="Atkinson Hyperlegible, Verdana">°C</text>';
+  g.innerHTML = s;
+})();
+
+/* ---------- Woordkaarten ---------- */
+const words = [
+  ["Positief getal","Een getal groter dan 0. Bijvoorbeeld 4 of 7. Rechts van 0 op de getallenlijn."],
+  ["Negatief getal","Een getal kleiner dan 0. Bijvoorbeeld −3. Links van 0 op de getallenlijn."],
+  ["Optellen (+)","Erbij doen. Op de getallenlijn ga je naar rechts."],
+  ["Aftrekken (−)","Eraf halen. Op de getallenlijn ga je naar links."],
+  ["Getallenlijn","Een lijn met alle getallen op volgorde. Links de negatieve, rechts de positieve getallen."],
+  ["Negatiefmin",'Het minteken hoort bij het getal. In <span class="nm">−</span>6 is de min een negatiefmin. Je leest: "min zes".'],
+  ["Aftrekmin",'Het minteken is de bewerking: je haalt iets weg. In 6 <span class="am">−</span> 2 is de min een aftrekmin.']
+];
+const cards = $("#cards");
+words.forEach(([w,d])=>{
+  const b=document.createElement("button"); b.type="button"; b.className="card";
+  b.innerHTML='<span class="front">'+w+'</span><span class="back">'+d+'</span><span class="tap">Tik voor de uitleg</span>';
+  b.setAttribute("aria-expanded","false");
+  b.addEventListener("click",()=>{ const on=b.classList.toggle("flipped"); b.setAttribute("aria-expanded",on); });
+  cards.appendChild(b);
+});
+
+/* ---------- Getallenlijn ---------- */
+function drawNL(svg, min, max, from, step, label, clickable){
+  const W=1000, pad=30, yL=95;
+  const x = v => pad + (v-min)/(max-min)*(W-2*pad);
+  let s = '<defs><marker id="ah-'+svg.id+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="'+(step>=0?"#c93c22":"#1d64a8")+'"/></marker></defs>';
+  s += '<line x1="'+pad+'" x2="'+(W-pad)+'" y1="'+yL+'" y2="'+yL+'" stroke="#13233a" stroke-width="3"/>';
+  const every = (max-min)>24 ? 5 : 1;
+  for(let v=min; v<=max; v++){
+    const major = v%every===0 || v===0;
+    s += '<line x1="'+x(v)+'" x2="'+x(v)+'" y1="'+(yL-(v===0?14:8))+'" y2="'+(yL+(v===0?14:8))+'" stroke="#13233a" stroke-width="'+(v===0?3:1.5)+'"/>';
+    if(major) s += '<text x="'+x(v)+'" y="'+(yL+36)+'" text-anchor="middle" font-size="'+(v===0?22:((max-min)>20?16:19))+'" font-weight="'+(v===0?700:400)+'">'+(v<0?"−"+(-v):v)+'</text>';
+  }
+  if(clickable){
+    const w=(W-2*pad)/(max-min);
+    for(let v=min; v<=max; v++) s += '<g class="tick" data-v="'+v+'"><rect x="'+(x(v)-w/2)+'" y="'+(yL-22)+'" width="'+w+'" height="66" fill="transparent"/></g>';
+  }
+  if(from!==null && step===0){
+    s += '<circle cx="'+x(from)+'" cy="'+yL+'" r="11" fill="#13233a"/><text x="'+x(from)+'" y="'+(yL-24)+'" text-anchor="middle" font-size="18" font-weight="700">start</text>';
+    svg.innerHTML = s; return;
+  }
+  if(from!==null){
+    const to = from+step;
+    if(to<min||to>max||from<min||from>max){
+      s += '<text x="'+W/2+'" y="30" text-anchor="middle" font-size="20">Kies getallen tussen '+fmt(min)+' en '+max+'.</text>';
+    } else {
+      const x1=x(from), x2=x(to), h = Math.min(70, 20+Math.abs(x2-x1)*0.25);
+      const col = step>=0 ? "#c93c22" : "#1d64a8";
+      s += '<path class="arc" d="M'+x1+','+(yL-6)+' Q'+((x1+x2)/2)+','+(yL-6-h*2)+' '+x2+','+(yL-6)+'" fill="none" stroke="'+col+'" stroke-width="4" marker-end="url(#ah-'+svg.id+')"/>';
+      s += '<text x="'+((x1+x2)/2)+'" y="'+Math.max(18,(yL-6-h)-8)+'" text-anchor="middle" font-size="22" font-weight="700" fill="'+col+'">'+(label||((step>=0?"+":"−")+Math.abs(step)))+'</text>';
+      s += '<circle cx="'+x1+'" cy="'+yL+'" r="9" fill="#13233a"/>';
+      s += '<circle cx="'+x2+'" cy="'+yL+'" r="10" fill="'+col+'" stroke="#13233a" stroke-width="2"/>';
+    }
+  }
+  svg.innerHTML = s;
+  const arc = svg.querySelector(".arc");
+  if(arc && !matchMedia("(prefers-reduced-motion: reduce)").matches){
+    const L = arc.getTotalLength(); arc.style.strokeDasharray=L; arc.style.strokeDashoffset=L;
+    arc.getBoundingClientRect(); arc.style.transition="stroke-dashoffset .9s ease"; arc.style.strokeDashoffset=0;
+  }
+}
+const nl3 = $("#nl3");
+const st = {start:-6, op:"+", n:4};
+function syncNL(){
+  $("#vStart").textContent = fmt(st.start);
+  $("#vN").textContent = st.n;
+  $$("[data-op]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.op===st.op));
+  const step = st.op==="+" ? st.n : -st.n, to = st.start+step;
+  $("#nlRes").textContent = fmt(st.start)+" "+(st.op==="+"?"+":M)+" "+st.n+" = ?";
+  drawNL(nl3,-15,15,st.start,0,null,true);
+  $("#nlGo").disabled = (to<-15||to>15);
+  if(to<-15||to>15) $("#nlRes").textContent = "Dat past niet op de lijn. Kies minder stappen.";
+}
+function runNL(){
+  const step = st.op==="+" ? st.n : -st.n, to = st.start+step;
+  if(to<-15||to>15) return;
+  drawNL(nl3,-15,15,st.start,step,null,true);
+  $("#nlRes").textContent = fmt(st.start)+" "+(st.op==="+"?"+":M)+" "+st.n+" = "+fmt(to);
+}
+$("#nlGo").addEventListener("click",runNL);
+$$("[data-adj]").forEach(b=>b.addEventListener("click",()=>{
+  const [k,d]=b.dataset.adj.split(",");
+  if(k==="start") st.start=Math.max(-15,Math.min(15,st.start+ +d));
+  else st.n=Math.max(0,Math.min(20,st.n+ +d));
+  syncNL();
+}));
+$$("[data-op]").forEach(b=>b.addEventListener("click",()=>{ st.op=b.dataset.op; syncNL(); }));
+nl3.addEventListener("click",e=>{ const t=e.target.closest(".tick"); if(t){ st.start=+t.dataset.v; syncNL(); } });
+$$("[data-nl]").forEach(b=>b.addEventListener("click",()=>{
+  const [a,op,n]=b.dataset.nl.split(",");
+  st.start=+a; st.op=op; st.n=+n; syncNL(); runNL();
+}));
+syncNL(); runNL();
+
+/* ---------- Rijtjes ---------- */
+const rowsData = {
+  A: [["3 + 2",5],["3 + 1",4],["3 + 0",3],["3 + "+M+"1",2],["3 + "+M+"2",1],["3 + "+M+"3",0]],
+  B: [["3 "+M+" 2",1],["3 "+M+" 1",2],["3 "+M+" 0",3],["3 "+M+" "+M+"1",4],["3 "+M+" "+M+"2",5],["3 "+M+" "+M+"3",6]]
+};
+const shown = {A:3, B:3};
+function renderRow(k){
+  const el = $("#row"+k); el.innerHTML="";
+  rowsData[k].forEach(([q,a],i)=>{
+    const r=document.createElement("div"); r.className="r";
+    const vis = i<shown[k];
+    const diff = (i>0 && vis) ? (k==="A"?"1 minder":"1 meer") : "";
+    r.innerHTML='<span>'+q+'</span><span>=</span><span class="res'+(vis?"":" hidden")+'">'+(vis?fmt(a):"?")+'</span><span class="diff">'+diff+'</span>';
+    el.appendChild(r);
+  });
+}
+["A","B"].forEach(renderRow);
+$$("[data-row]").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.dataset.row; if(shown[k]<rowsData[k].length){ shown[k]++; renderRow(k); }
+}));
+$$("[data-law]").forEach(b=>b.addEventListener("click",()=>$("#"+b.dataset.law).classList.toggle("open")));
+
+/* ---------- Uitgewerkte voorbeelden (afnemende hulp) ---------- */
+// nm() = negatiefmin, am() = aftrekmin, bl(x) = in te vullen
+const nm = '<span class="nm">'+M+'</span>', am = '<span class="am">'+M+'</span>';
+const bl = x => '<span class="blank" role="button" tabindex="0" aria-label="Tik om te tonen">'+x+'</span>';
+const examples = [
+  {tag:"Voorbeeld 1 · helemaal uitgewerkt", rows:[["Som", nm+"9 + "+nm+"3"],["Eén teken", nm+"9 "+am+" 3"],["Uitkomst", M+"12"]]},
+  {tag:"Voorbeeld 2 · helemaal uitgewerkt", rows:[["Som","8 "+am+" "+nm+"3"],["Eén teken","8 + 3"],["Uitkomst","11"]]},
+  {tag:"Voorbeeld 3 · vul zelf in", rows:[["Som","5 + "+nm+"8"],["Eén teken","5 "+bl(M)+" 8"],["Uitkomst",bl(M+"3")]]},
+  {tag:"Voorbeeld 4 · vul zelf in", rows:[["Som",nm+"4 "+am+" "+nm+"6"],["Eén teken",nm+"4 "+bl("+")+" 6"],["Uitkomst",bl("2")]]},
+  {tag:"Voorbeeld 5 · helemaal zelf (wisbordje)", rows:[["Som",nm+"2 "+am+" "+nm+"7"],["Eén teken",bl(M+"2 + 7")],["Uitkomst",bl("5")]]}
+];
+const wk = $("#worked");
+examples.forEach(ex=>{
+  const d=document.createElement("div"); d.className="we";
+  d.innerHTML='<span class="tag">'+ex.tag+'</span>'+ex.rows.map(([l,m])=>'<span class="lbl">'+l+'</span><span class="m">'+m+'</span>').join("");
+  wk.appendChild(d);
+});
+wk.addEventListener("click",e=>{ const b=e.target.closest(".blank"); if(b) b.classList.toggle("shown"); });
+wk.addEventListener("keydown",e=>{ const b=e.target.closest(".blank"); if(b&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); b.classList.toggle("shown"); } });
+const markBtn=$("#markBtn");
+markBtn.addEventListener("click",()=>{ const on=document.body.classList.toggle("mark-min"); markBtn.setAttribute("aria-pressed",on); });
+
+/* ---------- Wisbordjes ---------- */
+const wb = [
+  {q:[-7,"+",3], one:null, h1:"Staan er twee tekens naast elkaar? Nee. Begin bij "+M+"7. Plus is naar rechts.", note:"Fout "+M+"10 of 4: richting of teken kwijt."},
+  {q:[4,"-",9], one:null, h1:"Geen twee tekens naast elkaar. Begin bij 4 en ga 9 stappen naar links. Je komt voorbij de 0.", note:"Fout 5: leerling doet groot min klein. Context: je hebt 4 euro en geeft 9 uit."},
+  {q:[-2,"-",6], one:null, h1:"Geen twee tekens naast elkaar. Begin bij "+M+"2. Min is naar links.", note:"Fout "+M+"4 of 4: getallen van elkaar afgetrokken."},
+  {q:[6,"+",-4], one:"6 "+M+" 4", h1:"Twee tekens naast elkaar: + "+M+" wordt "+M+". Dus: 6 "+M+" 4.", note:"Fout 10: de + "+M+" is genegeerd."},
+  {q:[-5,"+",-5], one:M+"5 "+M+" 5", h1:"+ "+M+" wordt "+M+". Dus: "+M+"5 "+M+" 5.", note:"Fout 0: negatiefmin gelezen als aftrekmin. Laat hardop lezen."},
+  {q:[7,"-",-2], one:"7 + 2", h1:M+" "+M+" wordt +. Dus: 7 + 2.", note:"Fout 5: "+M+" "+M+" niet omgezet. Terug naar rijtje B."},
+  {q:[-8,"-",-3], one:M+"8 + 3", h1:M+" "+M+" wordt +. Dus: "+M+"8 + 3.", note:"Fout "+M+"11: "+M+" "+M+" niet omgezet. Fout 5 of 11: teken van "+M+"8 vergeten."},
+  {q:[-1,"-",-10], one:M+"1 + 10", h1:M+" "+M+" wordt +. Dus: "+M+"1 + 10.", note:"Fout "+M+"11: "+M+" "+M+" niet omgezet."}
+];
+let wi = 0;
+const dots=$("#wbDots"); wb.forEach(()=>dots.appendChild(document.createElement("i")));
+function wbText(it){ const [a,op,b]=it.q; return fmt(a)+" "+(op==="+"?"+":M)+" "+fmt(b); }
+function wbVal(it){ const [a,op,b]=it.q; return op==="+"?a+b:a-b; }
+function closeWB(){ ["#wbH1t","#wbH2t","#wbAt"].forEach(s=>$(s).classList.remove("open")); ["#wbH1","#wbH2","#wbA"].forEach(s=>$(s).setAttribute("aria-expanded","false")); $("#wbGo").textContent=""; }
+function renderWB(){
+  const it=wb[wi]; closeWB();
+  $("#wbSom").textContent = wbText(it)+" = ?";
+  $("#wbCount").textContent = "Som "+(wi+1)+" van "+wb.length;
+  $$("#wbDots i").forEach((d,j)=>d.classList.toggle("on", j<=wi));
+  $("#wbH1t").textContent = it.h1;
+  const [a,op,b]=it.q, step = op==="+"?b:-b;
+  $("#wbH2p").textContent = "Begin bij "+fmt(a)+". Ga "+Math.abs(step)+" stappen naar "+(step>=0?"rechts":"links")+".";
+  $("#wbAt").innerHTML = wbText(it)+(it.one?" = "+it.one:"")+" = <b>"+fmt(wbVal(it))+"</b>";
+  $("#wbNote").innerHTML = "<li>Antwoord: "+fmt(wbVal(it))+".</li><li>"+it.note+"</li><li>Meer dan een kwart fout? Klik Hint 1 en Hint 2 en doe de som samen.</li>";
+}
+function toggleWB(btn, panel, after){
+  const el=$(panel); const open=el.classList.toggle("open"); $(btn).setAttribute("aria-expanded",open); if(open&&after) after();
+}
+$("#wbH1").addEventListener("click",()=>toggleWB("#wbH1","#wbH1t"));
+$("#wbH2").addEventListener("click",()=>toggleWB("#wbH2","#wbH2t",()=>{ const [a,op,b]=wb[wi].q; drawNL($("#nl5"),-12,12,a,op==="+"?b:-b); }));
+$("#wbA").addEventListener("click",()=>toggleWB("#wbA","#wbAt"));
+$("#wbPrev").addEventListener("click",()=>{ if(wi>0){wi--; renderWB();} });
+$("#wbNext").addEventListener("click",()=>{ if(wi<wb.length-1){wi++; renderWB();} });
+let cd=null;
+$("#wbNow").addEventListener("click",()=>{
+  clearInterval(cd); let n=3; const g=$("#wbGo"); g.textContent=n;
+  cd=setInterval(()=>{ n--; g.textContent = n>0? n : "Nu! Bordjes omhoog"; if(n<=0) clearInterval(cd); },800);
+});
+renderWB();
+
+/* ---------- Codekraker ---------- */
+const code = {"-22":"C","-20":"H","-14":"K","-13":"Z","-11":"I","-9":"B","-6":"S","-5":"D","-4":"E","-3":"W","-1":"L","0":"N","1":"O","3":"R","4":"A","5":"M","6":"U","7":"J","9":"G","11":"T","13":"F","20":"P"};
+const ck = [
+  ["A1",-6,"+",-5],["A2",4,"-",-3],["A3",-10,"+",4],["A4",-2,"-",7],
+  ["B1",8,"+",-12],["B2",-5,"-",-8],["B3",-13,"+",9],["B4",-3,"-",-3]
+];
+const ckVal = r => r[2]==="+" ? r[1]+r[3] : r[1]-r[3];
+ck.forEach(r=>{
+  const li=document.createElement("li");
+  li.innerHTML='<span>'+r[0]+'. &nbsp;'+fmt(r[1])+' '+(r[2]==="+"?"+":M)+' '+fmt(r[3])+' =</span><em data-ck="'+r[0]+'"></em>';
+  $(r[0][0]==="A"?"#codeA":"#codeB").appendChild(li);
+});
+const keys = Object.keys(code).map(Number).sort((a,b)=>a-b);
+const half = Math.ceil(keys.length/2);
+[keys.slice(0,half), keys.slice(half)].forEach(part=>{
+  const tr1=document.createElement("tr"), tr2=document.createElement("tr");
+  tr1.innerHTML = part.map(k=>'<th scope="col">'+fmt(k)+'</th>').join("");
+  tr2.innerHTML = part.map(k=>'<td>'+code[k]+'</td>').join("");
+  $("#ctab").append(tr1,tr2);
+});
+const wordEl=$("#word"); let wn=0;
+ck.forEach(()=>{ const s=document.createElement("span"); s.textContent=""; wordEl.appendChild(s); });
+function showLetter(i){
+  const r=ck[i], v=ckVal(r);
+  const s=wordEl.children[i]; s.textContent=code[v]; s.classList.add("on");
+  document.querySelector('[data-ck="'+r[0]+'"]').textContent = fmt(v)+" → "+code[v];
+}
+$("#wordNext").addEventListener("click",()=>{ if(wn<ck.length){ showLetter(wn); wn++; } });
+$("#wordAll").addEventListener("click",()=>{ while(wn<ck.length){ showLetter(wn); wn++; } });
+
+/* ---------- Exit ticket ---------- */
+$("#exitAns").addEventListener("click",()=>{ $$(".exit .reveal").forEach(e=>e.classList.toggle("open")); });
+
+fromHash();
+})();
+</script>
+</body>
+</html>
