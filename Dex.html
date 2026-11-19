@@ -100,10 +100,13 @@ h1,h2{font-family:var(--display);font-weight:700;line-height:1.1;margin:0;text-w
   .bubble,.bob,.kelp,.tail,.school,.anemone,.rays,.flake{animation:none}
   #dex,#wheel,#door{transition:none}
 }
+.cardhome{color:#a9d2e6;font-size:.95rem;text-underline-offset:4px;justify-self:start}
+.homelink{text-decoration:none;font-weight:700;white-space:nowrap}
 </style>
 </head>
 <body>
 <header class="top">
+  <a class="tbtn homelink" href="./" title="Terug naar de homepage van Wis4All">← Wis4All</a>
   <h1>Dex ontsnapt uit de diepte</h1>
   <div class="hatches" id="hatches" aria-label="Luiken"></div>
   <span class="stat">Fouten <b id="sErr">0</b> · Hints <b id="sHint">0</b></span>
@@ -418,6 +421,7 @@ h1,h2{font-family:var(--display);font-weight:700;line-height:1.1;margin:0;text-w
       <li>Vast? Gebruik een hint. Fouten en hints tellen mee voor je sterren.</li>
     </ul>
     <button class="big" id="startBtn" type="button">Help Dex ontsnappen</button>
+    <a class="cardhome" href="./">← Terug naar Wis4All</a>
   </div>
 </div>
 
@@ -435,6 +439,7 @@ h1,h2{font-family:var(--display);font-weight:700;line-height:1.1;margin:0;text-w
     <p class="stars" id="stars" aria-live="polite"></p>
     <p id="endTxt"></p>
     <button class="big" id="againBtn" type="button">Speel opnieuw met nieuwe sommen</button>
+    <a class="cardhome" href="./">← Terug naar Wis4All</a>
   </div>
 </div>
 
