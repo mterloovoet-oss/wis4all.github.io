@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dex ontsnapt uit de diepte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Plan: links de onderwaterkamer (SVG) met luik, dolfijn en dieptemeter; rechts het codepaneel met de opdracht. Diepte = negatief getal; elk luik = 10 m omhoog. Eén donker zeethema, bewust. */
+:root{
+  --deep:#06233a;
+  --sea:#0d4a70;
+  --foam:#e6f5fb;
+  --coral:#ff7a59;
+  --kelp:#3fa37a;
+  --gold:#f4c542;
+  --display:"Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--deep);color:var(--foam);font-family:var(--body);font-size:19px;line-height:1.45;font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h1,h2{font-family:var(--display);font-weight:700;line-height:1.1;margin:0;text-wrap:balance}
+
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:12px 16px;background:#041a2b;border-bottom:1px solid #12405f}
+.top h1{font-size:1.3rem;margin-right:auto}
+.hatches{display:flex;gap:6px;flex-wrap:wrap}
+.hatches i{width:22px;height:22px;border-radius:50%;border:2px solid #4d7c99;display:block;background:#0a2c45}
+.hatches i.open{background:var(--gold);border-color:var(--gold)}
+.hatches i.now{border-color:var(--coral);box-shadow:0 0 0 3px rgba(255,122,89,.35)}
+.stat{font-size:.85rem;color:#a9d2e6}
+.stat b{color:var(--foam)}
+.tbtn{background:#12405f;border:0;color:var(--foam);border-radius:8px;padding:6px 12px;font-size:.85rem}
+
+.game{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);gap:18px;max-width:1280px;margin:0 auto;padding:16px}
+@media (max-width:900px){ .game{grid-template-columns:1fr} }
+.scene{position:relative;align-self:start;border-radius:18px;overflow:hidden;border:3px solid #12405f;background:var(--sea)}
+.scene svg{display:block;width:100%;height:auto}
+.fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .45s}
+.fade.on{opacity:1}
+
+.panel{background:#0a2c45;border:2px solid #12405f;border-radius:18px;padding:20px;display:grid;gap:14px;align-content:start;align-self:start}
+.room{font-family:var(--display);font-size:1.05rem;color:var(--gold)}
+.story{color:#cfe8f3}
+.som{font-family:var(--display);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:700;line-height:1.1;color:#fff}
+.ansrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.signbtn{height:58px;padding:0 14px;border-radius:12px;border:2px solid #7fc0f0;background:#fff;color:#0d4a70;font-weight:700;font-size:1.2rem;white-space:nowrap}
+.ansin{width:6.5ch;height:58px;font:inherit;font-size:1.8rem;font-weight:700;text-align:center;border:3px solid #7fc0f0;border-radius:12px;background:#fff;color:#000;-webkit-text-fill-color:#000}
+.unit{font-size:1.1rem}
+.go{height:58px;padding:0 22px;border:0;border-radius:12px;background:var(--coral);color:#1b0b05;font-weight:700;font-size:1.15rem}
+.go:disabled{opacity:.4;cursor:not-allowed}
+.fb{display:none;border-radius:12px;padding:10px 14px;font-size:1rem}
+.fb.show{display:block}
+.fb.good{background:#123f2c;border-left:5px solid var(--kelp)}
+.fb.bad{background:#47201a;border-left:5px solid var(--coral)}
+.hintrow{display:flex;gap:8px;flex-wrap:wrap}
+.hbtn{border:2px solid var(--gold);background:transparent;color:var(--gold);border-radius:10px;padding:5px 12px;font-size:.9rem;font-weight:700}
+.hbtn:disabled{opacity:.35;cursor:not-allowed}
+.hint{background:#3a3214;border-left:5px solid var(--gold);border-radius:10px;padding:10px 14px;font-size:.98rem}
+.nl{width:100%;height:auto;display:block;background:#fff;border-radius:8px;margin-top:8px}
+.nl text{font-family:var(--body);fill:#13233a}
+.rules{font-size:.85rem;color:#a9d2e6;border-top:1px solid #12405f;padding-top:10px}
+
+/* Start- en eindscherm */
+.overlay{position:fixed;inset:0;background:rgba(3,18,31,.86);display:grid;place-items:center;padding:16px;z-index:10}
+.overlay[hidden]{display:none}
+.card{max-width:640px;background:#0a2c45;border:3px solid var(--gold);border-radius:20px;padding:26px;display:grid;gap:14px}
+.card h2{font-size:2rem;color:var(--gold)}
+.card ul{margin:0;padding-left:22px}
+.stars{font-size:2.6rem;color:var(--gold);letter-spacing:.15em}
+.big{height:58px;padding:0 26px;border:0;border-radius:12px;background:var(--coral);color:#1b0b05;font-weight:700;font-size:1.2rem;justify-self:start}
+
+/* Animaties in de kamer */
+.bubble{animation:rise linear infinite}
+@keyframes rise{from{transform:translateY(0);opacity:.0}10%{opacity:.8}to{transform:translateY(-520px);opacity:0}}
+#dex{transition:transform 1.1s ease-in-out}
+.bob{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#wheel{transform-box:fill-box;transform-origin:center;transition:transform .8s ease-in-out}
+#door{transform-box:fill-box;transform-origin:50% 0%;transition:transform .7s ease-in}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.kelp{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.tail{transform-box:fill-box;transform-origin:100% 40%;animation:flick 1.2s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.school{animation:swimby 28s linear infinite}
+@keyframes swimby{from{transform:translateX(-120px)}to{transform:translateX(960px)}}
+.anemone{transform-box:fill-box;transform-origin:50% 100%;animation:sway 3s ease-in-out infinite}
+.rays{animation:shimmer 6s ease-in-out infinite}
+@keyframes shimmer{0%,100%{opacity:.85}50%{opacity:1}}
+.flake{animation:drift linear infinite}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(30px,420px)}}
+@media (prefers-reduced-motion:reduce){
+  .bubble,.bob,.kelp,.tail,.school,.anemone,.rays,.flake{animation:none}
+  #dex,#wheel,#door{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Dex ontsnapt uit de diepte</h1>
+  <div class="hatches" id="hatches" aria-label="Luiken"></div>
+  <span class="stat">Fouten <b id="sErr">0</b> · Hints <b id="sHint">0</b></span>
+  <button class="tbtn" id="restart" type="button">Opnieuw</button>
+</header>
+
+<div class="game">
+  <div class="scene" id="scene">
+    <svg viewBox="0 0 800 520" role="img" aria-label="Onderwaterlab met een luik in het plafond en Dex, een tuimelaar">
+      <defs>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+          <stop id="wTop" offset="0" stop-color="#0d4a70"/>
+          <stop id="wBot" offset="1" stop-color="#041a2e"/>
+        </linearGradient>
+        <radialGradient id="light" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#fff6c8"/>
+          <stop offset="1" stop-color="#7fd3f5"/>
+        </radialGradient>
+        <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#9fb4c2"/>
+          <stop offset=".5" stop-color="#6b8494"/>
+          <stop offset="1" stop-color="#3c5363"/>
+        </linearGradient>
+        <linearGradient id="pipe" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8197a5"/>
+          <stop offset=".45" stop-color="#c3d2db"/>
+          <stop offset="1" stop-color="#40576a"/>
+        </linearGradient>
+        <linearGradient id="pipeV" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#40576a"/>
+          <stop offset=".5" stop-color="#b5c6d0"/>
+          <stop offset="1" stop-color="#40576a"/>
+        </linearGradient>
+        <linearGradient id="ray" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#d6f2ff" stop-opacity=".32"/>
+          <stop offset="1" stop-color="#d6f2ff" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#d8bd84"/>
+          <stop offset="1" stop-color="#9c7e4a"/>
+        </linearGradient>
+        <radialGradient id="rock" cx=".35" cy=".3" r=".8">
+          <stop offset="0" stop-color="#7a8790"/>
+          <stop offset="1" stop-color="#2f3a42"/>
+        </radialGradient>
+        <linearGradient id="kelpG" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#2f6b3e"/>
+          <stop offset="1" stop-color="#6fae5a"/>
+        </linearGradient>
+        <radialGradient id="vignette" cx=".5" cy=".5" r=".7">
+          <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+          <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+        </radialGradient>
+        <radialGradient id="portWater" cx=".5" cy=".4" r=".6">
+          <stop offset="0" stop-color="#1d6e9c"/>
+          <stop offset="1" stop-color="#03111d"/>
+        </radialGradient>
+        <!-- huid van een tuimelaar: donkergrijze rug, lichtere flank, witte buik -->
+        <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#46525c"/>
+          <stop offset=".45" stop-color="#7f8f9b"/>
+          <stop offset=".72" stop-color="#b9c5cd"/>
+          <stop offset="1" stop-color="#eef2f4"/>
+        </linearGradient>
+        <linearGradient id="finG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a454e"/>
+          <stop offset="1" stop-color="#5f6e79"/>
+        </linearGradient>
+        <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#fff" stop-opacity=".35"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <g id="fish">
+          <path d="M0,0 C7,-6 18,-6 24,0 C18,6 7,6 0,0 Z"/>
+          <path d="M1,0 L-8,-6 L-6,0 L-8,6 Z"/>
+        </g>
+      </defs>
+
+      <!-- water en achterwand van het lab -->
+      <rect width="800" height="520" fill="url(#water)"/>
+      <g stroke="#ffffff" stroke-opacity=".06" stroke-width="2" fill="none">
+        <path d="M38,180 H762 M38,300 H762 M190,70 V470 M340,70 V470 M490,70 V470 M640,70 V470"/>
+      </g>
+      <g fill="#ffffff" fill-opacity=".09">
+        <circle cx="198" cy="188" r="2.5"/><circle cx="332" cy="188" r="2.5"/><circle cx="498" cy="188" r="2.5"/><circle cx="632" cy="188" r="2.5"/>
+        <circle cx="198" cy="308" r="2.5"/><circle cx="332" cy="308" r="2.5"/><circle cx="498" cy="308" r="2.5"/><circle cx="632" cy="308" r="2.5"/>
+      </g>
+      <!-- roeststrepen -->
+      <g fill="#a0522d" opacity=".18">
+        <path d="M200,190 C202,215 198,240 201,265 L196,265 C194,240 197,215 196,190 Z"/>
+        <path d="M630,310 C633,340 628,370 632,400 L626,400 C623,370 627,340 625,310 Z"/>
+      </g>
+
+      <!-- patrijspoort met vissen in de verte -->
+      <g transform="translate(255,175)">
+        <circle r="44" fill="url(#metal)"/>
+        <circle r="34" fill="url(#portWater)"/>
+        <g fill="#0a2a40" opacity=".9">
+          <use href="#fish" transform="translate(-20,-6) scale(.6)"/>
+          <use href="#fish" transform="translate(4,4) scale(.5)"/>
+          <use href="#fish" transform="translate(-6,14) scale(.45)"/>
+        </g>
+        <path d="M-22,-22 A31,31 0 0 1 10,-30" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="4" stroke-linecap="round"/>
+        <g fill="#2c4352"><circle cx="0" cy="-39" r="3"/><circle cx="39" cy="0" r="3"/><circle cx="0" cy="39" r="3"/><circle cx="-39" cy="0" r="3"/></g>
+      </g>
+
+      <!-- lichtbundels door het open luik -->
+      <g class="rays">
+        <polygon points="360,95 440,95 600,520 200,520" fill="url(#ray)"/>
+        <polygon points="385,95 415,95 470,520 330,520" fill="url(#ray)" opacity=".7"/>
+      </g>
+
+      <!-- school visjes op de achtergrond -->
+      <g class="school" fill="#a9c3d1" opacity=".55">
+        <use href="#fish" transform="translate(0,215) scale(.8)"/>
+        <use href="#fish" transform="translate(-30,228) scale(.7)"/>
+        <use href="#fish" transform="translate(-18,200) scale(.65)"/>
+        <use href="#fish" transform="translate(-55,212) scale(.75)"/>
+        <use href="#fish" transform="translate(-70,232) scale(.6)"/>
+        <use href="#fish" transform="translate(-48,192) scale(.55)"/>
+      </g>
+
+      <!-- plafond, muren en leidingen -->
+      <rect x="0" y="0" width="800" height="70" fill="#0b2233"/>
+      <rect x="0" y="0" width="38" height="520" fill="#0b2233"/>
+      <rect x="762" y="0" width="38" height="520" fill="#0b2233"/>
+      <g fill="#24465d">
+        <circle cx="19" cy="120" r="5"/><circle cx="19" cy="220" r="5"/><circle cx="19" cy="320" r="5"/><circle cx="19" cy="420" r="5"/>
+        <circle cx="781" cy="120" r="5"/><circle cx="781" cy="220" r="5"/><circle cx="781" cy="320" r="5"/><circle cx="781" cy="420" r="5"/>
+        <circle cx="100" cy="35" r="5"/><circle cx="200" cy="35" r="5"/><circle cx="600" cy="35" r="5"/><circle cx="700" cy="35" r="5"/>
+      </g>
+      <rect x="38" y="74" width="282" height="14" rx="7" fill="url(#pipe)"/>
+      <rect x="480" y="74" width="282" height="14" rx="7" fill="url(#pipe)"/>
+      <g fill="#566d7c"><rect x="120" y="71" width="8" height="20" rx="2"/><rect x="250" y="71" width="8" height="20" rx="2"/><rect x="560" y="71" width="8" height="20" rx="2"/><rect x="690" y="71" width="8" height="20" rx="2"/></g>
+      <rect x="738" y="88" width="16" height="372" rx="8" fill="url(#pipeV)"/>
+      <g transform="translate(746,300)">
+        <circle r="17" fill="none" stroke="#c0392b" stroke-width="5"/>
+        <path d="M-17,0 H17 M0,-17 V17" stroke="#c0392b" stroke-width="4"/>
+        <circle r="5" fill="#c0392b"/>
+      </g>
+      <!-- waarschuwingsstrepen rond het luik -->
+      <g transform="translate(400,70)">
+        <circle r="74" fill="none" stroke="#f4c542" stroke-width="8" stroke-dasharray="14 12"/>
+      </g>
+
+      <!-- zeesneeuw -->
+      <g id="snow" fill="#e6f5fb" opacity=".5"></g>
+
+      <!-- bodem -->
+      <path d="M38,468 C160,448 260,478 400,460 C540,444 640,476 762,458 L762,520 L38,520 Z" fill="url(#sand)"/>
+      <g fill="none" stroke="#f3dfae" stroke-opacity=".45" stroke-width="2" stroke-linecap="round">
+        <path d="M70,490 C100,484 130,494 160,488"/><path d="M230,500 C270,492 300,504 340,496"/>
+        <path d="M430,486 C470,478 500,490 540,482"/><path d="M600,498 C640,490 680,502 720,494"/>
+        <path d="M150,508 C190,502 220,512 260,506"/><path d="M480,508 C520,500 560,512 600,504"/>
+      </g>
+      <!-- lichtvlekjes op het zand -->
+      <g fill="#fff6d0" opacity=".18">
+        <ellipse cx="330" cy="478" rx="26" ry="5"/><ellipse cx="400" cy="486" rx="34" ry="6"/><ellipse cx="470" cy="476" rx="22" ry="4"/>
+      </g>
+
+      <!-- stenen -->
+      <ellipse cx="612" cy="470" rx="40" ry="20" fill="url(#rock)"/>
+      <ellipse cx="652" cy="478" rx="24" ry="12" fill="url(#rock)"/>
+      <ellipse cx="62" cy="474" rx="22" ry="12" fill="url(#rock)"/>
+
+      <!-- zeewier -->
+      <g fill="url(#kelpG)">
+        <path class="kelp" d="M140,476 C126,430 150,405 136,362 C130,335 146,315 140,292 C160,320 150,352 158,385 C166,420 150,450 156,476 Z"/>
+        <path class="kelp" style="animation-delay:-1.3s" d="M168,478 C158,446 176,425 166,395 C182,418 178,448 182,478 Z"/>
+        <path class="kelp" style="animation-delay:-2.1s" d="M700,468 C688,420 712,392 700,348 C716,376 714,414 720,468 Z"/>
+        <path class="kelp" style="animation-delay:-.6s" d="M722,466 C716,436 730,418 724,392 C736,412 736,440 734,466 Z"/>
+      </g>
+
+      <!-- vertakt koraal -->
+      <g fill="none" stroke="#e8735f" stroke-width="7" stroke-linecap="round">
+        <path d="M560,470 C558,440 552,420 540,404"/>
+        <path d="M556,444 C566,428 576,420 586,410"/>
+        <path d="M546,420 C540,412 534,406 526,402"/>
+        <path d="M570,428 C574,416 572,404 568,396"/>
+      </g>
+      <g fill="#f29a86"><circle cx="540" cy="404" r="5"/><circle cx="586" cy="410" r="5"/><circle cx="526" cy="402" r="5"/><circle cx="568" cy="396" r="5"/></g>
+
+      <!-- hersenkoraal -->
+      <g transform="translate(250,468)">
+        <ellipse rx="34" ry="20" fill="#c9a15a"/>
+        <path d="M-26,-6 C-18,-14 -10,2 -2,-8 C6,-16 14,0 24,-8 M-28,4 C-18,-4 -8,10 2,0 C12,-8 20,8 30,0" fill="none" stroke="#8c6b2f" stroke-width="2.5"/>
+      </g>
+
+      <!-- zeeanemoon -->
+      <g transform="translate(205,472)">
+        <ellipse cx="0" cy="0" rx="14" ry="7" fill="#b84a7a"/>
+        <g class="anemone" fill="none" stroke="#f3a3c8" stroke-width="4" stroke-linecap="round">
+          <path d="M-10,-2 C-18,-14 -14,-26 -20,-34"/><path d="M-5,-4 C-8,-18 -4,-28 -8,-40"/><path d="M0,-4 C0,-18 4,-28 2,-42"/>
+          <path d="M5,-4 C8,-18 6,-28 12,-38"/><path d="M10,-2 C18,-14 16,-24 22,-32"/>
+        </g>
+      </g>
+
+      <!-- zeester en schelp -->
+      <path d="M330,480 L335,470 L338,481 L349,481 L340,487 L344,497 L335,491 L326,497 L330,487 L321,481 Z" fill="#f08a3c" stroke="#b85e1f" stroke-width="1.5"/>
+      <g transform="translate(470,486)">
+        <path d="M-12,0 A12,11 0 0 1 12,0 Z" fill="#f4d0bf"/>
+        <path d="M0,0 L-8,-8 M0,0 L-3,-11 M0,0 L3,-11 M0,0 L8,-8" stroke="#c99b86" stroke-width="1.5"/>
+      </g>
+
+      <!-- codepaneel op de muur -->
+      <g transform="translate(560,130)">
+        <rect width="170" height="110" rx="12" fill="#0b2233" stroke="url(#metal)" stroke-width="5"/>
+        <rect x="14" y="44" width="142" height="52" rx="6" fill="#06151f"/>
+        <text x="85" y="32" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="16" fill="#7fd3f5">CODE LUIK</text>
+        <text id="panelNr" x="85" y="83" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="38" font-weight="700" fill="#f4c542">1</text>
+        <circle id="lamp" cx="150" cy="22" r="8" fill="#ff7a59"/>
+      </g>
+
+      <!-- dieptemeter -->
+      <g transform="translate(62,110)">
+        <rect width="54" height="300" rx="12" fill="#0b2233" stroke="url(#metal)" stroke-width="4"/>
+        <g id="depthTicks"></g>
+        <polygon id="depthArrow" points="54,0 70,-9 70,9" fill="#f4c542"/>
+        <text x="27" y="-12" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="15" fill="#7fd3f5">diepte</text>
+      </g>
+      <text id="depthTxt" x="89" y="440" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="#f4c542">−120 m</text>
+
+      <!-- luik in het plafond -->
+      <g transform="translate(400,70)">
+        <circle r="66" fill="url(#metal)"/>
+        <g fill="#2c4352"><circle cx="0" cy="-60" r="3.5"/><circle cx="42" cy="-42" r="3.5"/><circle cx="60" cy="0" r="3.5"/><circle cx="42" cy="42" r="3.5"/><circle cx="0" cy="60" r="3.5"/><circle cx="-42" cy="42" r="3.5"/><circle cx="-60" cy="0" r="3.5"/><circle cx="-42" cy="-42" r="3.5"/></g>
+        <circle r="54" fill="url(#light)"/>
+        <g id="door">
+          <circle r="54" fill="#5c7a8c" stroke="#2c4352" stroke-width="5"/>
+          <circle r="44" fill="none" stroke="#486474" stroke-width="3"/>
+          <g id="wheel">
+            <circle r="28" fill="none" stroke="#f4c542" stroke-width="6"/>
+            <line x1="-34" y1="0" x2="34" y2="0" stroke="#f4c542" stroke-width="6" stroke-linecap="round"/>
+            <line x1="0" y1="-34" x2="0" y2="34" stroke="#f4c542" stroke-width="6" stroke-linecap="round"/>
+            <circle r="7" fill="#f4c542"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- bellen -->
+      <g fill="none" stroke="#bfe9ff" stroke-width="2" id="bubbles"></g>
+
+      <!-- Dex, een tuimelaar (bottlenose dolfijn) -->
+      <g id="dex" style="transform:translate(380px,330px)">
+        <g class="bob">
+          <g id="dexBody" transform="scale(.82)">
+            <!-- verre borstvin -->
+            <path d="M58,16 C50,28 42,38 30,44 C38,34 42,26 44,16 Z" fill="#3a454e"/>
+            <!-- staart met horizontale staartvin (licht gedraaid) -->
+            <g class="tail">
+              <path d="M-140,-3 C-160,-6 -178,-14 -196,-22 C-190,-14 -184,-8 -176,-4 C-170,-3 -160,-1 -142,1 Z" fill="#3a454e"/>
+              <path d="M-142,-5 C-150,-4 -156,-2 -160,0 C-178,4 -194,12 -206,24 C-196,22 -186,22 -180,24 C-176,16 -168,10 -160,7 C-154,6 -148,5 -142,5 Z" fill="url(#finG)" stroke="#2f3a43" stroke-width="1.2" stroke-linejoin="round"/>
+            </g>
+            <!-- rugvin -->
+            <path d="M14,-40 C6,-60 -10,-78 -34,-88 C-27,-72 -28,-56 -38,-36 Z" fill="url(#finG)" stroke="#2f3a43" stroke-width="1.2" stroke-linejoin="round"/>
+            <!-- lichaam -->
+            <path d="M140,6 C136,2 124,0 110,0 C104,-1 100,-5 96,-12 C88,-28 70,-38 46,-42 C16,-46 -22,-42 -52,-33 C-82,-24 -112,-11 -142,-5 L-143,6 C-115,12 -88,22 -58,30 C-28,40 12,44 42,38 C72,32 92,22 108,14 C120,11 132,11 142,9 C143,8 142,6 140,6 Z" fill="url(#skin)" stroke="#2f3a43" stroke-width="1.5" stroke-linejoin="round"/>
+            <!-- donkere rugcape -->
+            <path d="M96,-12 C88,-28 70,-38 46,-42 C16,-46 -22,-42 -52,-33 C-82,-24 -112,-11 -142,-5 C-104,-14 -66,-22 -28,-24 C14,-26 56,-24 96,-12 Z" fill="#3a454e" opacity=".55"/>
+            <!-- lichte buik en keel -->
+            <path d="M108,14 C92,22 72,32 42,38 C12,44 -28,40 -58,30 C-34,28 -4,30 24,26 C54,22 84,14 108,14 Z" fill="#f4f7f8" opacity=".85"/>
+            <!-- glans op de rug -->
+            <path d="M80,-30 C50,-39 10,-40 -30,-33 C10,-35 50,-33 80,-28 Z" fill="url(#sheen)"/>
+            <!-- overgang snuit en meloen -->
+            <path d="M110,0 C104,2 100,-2 98,-8" fill="none" stroke="#2f3a43" stroke-width="1.2" stroke-opacity=".6"/>
+            <!-- bek -->
+            <path d="M141,8 C128,9 112,9 101,7 C98,6 96,4 96,2" fill="none" stroke="#2f3a43" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- oog met donkere vlek en streep naar de borstvin -->
+            <ellipse cx="86" cy="-3" rx="7" ry="4.5" fill="#56636d" opacity=".55"/>
+            <path d="M84,0 C76,6 68,10 58,14" fill="none" stroke="#56636d" stroke-width="3" stroke-opacity=".35" stroke-linecap="round"/>
+            <circle cx="87" cy="-3" r="3.2" fill="#0d1419"/>
+            <circle cx="88" cy="-4.2" r="1.1" fill="#fff"/>
+            <!-- blaasgat -->
+            <path d="M58,-38 C61,-40 65,-40 68,-38" fill="none" stroke="#2f3a43" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- nabije borstvin -->
+            <path d="M64,14 C54,30 40,44 20,52 C30,40 38,30 46,16 Z" fill="url(#finG)" stroke="#2f3a43" stroke-width="1.2" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- vignet voor diepte -->
+      <rect width="800" height="520" fill="url(#vignette)" pointer-events="none"/>
+      <text id="roomLabel" x="400" y="510" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="17" fill="#2b1f0c">Ruimte 1 van 12</text>
+    </svg>
+    <div class="fade" id="fade"></div>
+  </div>
+
+  <div class="panel" id="panel">
+    <p class="room" id="pRoom">Luik 1 van 12</p>
+    <p class="story" id="pStory"></p>
+    <p class="som" id="pSom"></p>
+    <div class="ansrow">
+      <button class="signbtn" id="sign" type="button" aria-label="Minteken aan of uit">− / +</button>
+      <input class="ansin" id="ans" type="text" inputmode="numeric" autocomplete="off" aria-label="Jouw antwoord">
+      <span class="unit" id="pUnit"></span>
+      <button class="go" id="check" type="button">Open luik</button>
+    </div>
+    <div class="fb" id="fb" role="status"></div>
+    <div class="hintrow" id="hintrow"></div>
+    <div id="hintbox"></div>
+  </div>
+</div>
+
+<div class="overlay" id="startScreen">
+  <div class="card">
+    <h2>Dex zit vast!</h2>
+    <p>Dex de dolfijn is een gezonken onderzeelab in gezwommen. De deur viel dicht. Nu zit ze op <b>120 meter diepte</b>, dus op <b>−120 m</b>.</p>
+    <p>Boven elke ruimte zit een luik met een codeslot. De code is het antwoord op een som. Elk goed antwoord opent een luik en brengt Dex <b>10 meter</b> omhoog. Na <b>12 luiken</b> is ze bij de oppervlakte: 0 m.</p>
+    <ul>
+      <li>Typ je antwoord. De knop <b>− / +</b> zet een minteken voor je getal.</li>
+      <li>Vast? Gebruik een hint. Fouten en hints tellen mee voor je sterren.</li>
+    </ul>
+    <button class="big" id="startBtn" type="button">Help Dex ontsnappen</button>
+  </div>
+</div>
+
+<div class="overlay" id="endScreen" hidden>
+  <div class="card">
+    <h2>Dex is vrij!</h2>
+    <svg viewBox="0 0 400 150" width="100%" role="img" aria-label="Dex springt boven het water uit">
+      <rect width="400" height="150" fill="#9fdcf5"/>
+      <circle cx="340" cy="35" r="22" fill="#f4c542"/>
+      <path d="M0,110 C60,100 120,120 200,108 C280,96 340,118 400,106 L400,150 L0,150 Z" fill="#1f7fb5"/>
+      <g transform="translate(205,72) rotate(-25) scale(.6)">
+        <use href="#dexBody"/>
+      </g>
+    </svg>
+    <p class="stars" id="stars" aria-live="polite"></p>
+    <p id="endTxt"></p>
+    <button class="big" id="againBtn" type="button">Speel opnieuw met nieuwe sommen</button>
+  </div>
+</div>
+
+<script>
+(function(){
+const M="−";
+const fmt=n=>(n<0?M+Math.abs(n):String(n));
+const $=s=>document.querySelector(s);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+
+/* ---------- Opdrachten ---------- */
+// type sum: a op b ; type miss: a − ? = c ; type ctxUp ; type diff
+function sumTask(a,op,b,story){ return {kind:"sum",a,op,b,story:story||"Kraak de code van dit luik."}; }
+function fixedSet(){
+  return [
+    sumTask(-7,"+",3,"Het eerste luik. Even opwarmen."),
+    sumTask(4,"-",9),
+    sumTask(-2,"-",6),
+    sumTask(6,"+",-4,"Let op: twee tekens naast elkaar!"),
+    sumTask(-5,"+",-5),
+    sumTask(7,"-",-2,"Weer twee tekens. Welke worden het?"),
+    sumTask(-8,"-",-3),
+    {kind:"up",a:-15,b:6,story:"Dex zwemt op "+M+"15 m. Ze zwemt 6 m omhoog."},
+    {kind:"diff",hi:4,lo:-2,story:"Bovenin het lab is het water 4 °C. Bij de bodem is het "+M+"2 °C (zout water bevriest pas onder 0 °C)."},
+    {kind:"miss",a:-6,x:-4,story:"Het slot mist een getal. Welk getal moet op de plaats van het vraagteken?"},
+    sumTask(-12,"+",-9),
+    sumTask(-13,"-",-20,"Het laatste luik! Daarna is Dex vrij.")
+  ];
+}
+function randomSet(){
+  const nz=(a,b)=>{ let v; do{ v=rnd(a,b);}while(v===0); return v; };
+  const t=[];
+  t.push(sumTask(-rnd(3,9),"+",rnd(2,8),"Het eerste luik. Even opwarmen."));
+  let a=rnd(2,6); t.push(sumTask(a,"-",a+rnd(2,7)));
+  t.push(sumTask(-rnd(2,7),"-",rnd(3,8)));
+  a=rnd(5,10); t.push(sumTask(a,"+",-rnd(2,a-1),"Let op: twee tekens naast elkaar!"));
+  t.push(sumTask(-rnd(2,8),"+",-rnd(2,8)));
+  t.push(sumTask(rnd(3,9),"-",-rnd(2,8),"Weer twee tekens. Welke worden het?"));
+  a=rnd(6,11); t.push(sumTask(-a,"-",-rnd(2,a-1)));
+  const d=rnd(12,25), up=rnd(4,10); t.push({kind:"up",a:-d,b:up,story:"Dex zwemt op "+M+d+" m. Ze zwemt "+up+" m omhoog."});
+  const hi=rnd(3,9), lo=-rnd(1,2); t.push({kind:"diff",hi,lo,story:"Bovenin het lab is het water "+hi+" °C. Bij de bodem is het "+M+Math.abs(lo)+" °C (zout water bevriest pas onder 0 °C)."});
+  const ma=-rnd(4,9), mx=-rnd(2,8); t.push({kind:"miss",a:ma,x:mx,story:"Het slot mist een getal. Welk getal moet op de plaats van het vraagteken?"});
+  t.push(sumTask(-rnd(8,14),"+",-rnd(6,12)));
+  a=rnd(8,15); t.push(sumTask(-a,"-",-(a+rnd(3,9)),"Het laatste luik! Daarna is Dex vrij."));
+  return t;
+}
+
+/* Elke opdracht -> tekst, antwoord, hints, foutanalyse */
+function build(t){
+  if(t.kind==="sum"){
+    const {a,op,b}=t, two=b<0;
+    const txt=fmt(a)+" "+(op==="+"?"+":M)+" "+fmt(b);
+    const step = op==="+" ? b : -b, ans=a+step;
+    const one = two ? fmt(a)+" "+(op==="+"?M:"+")+" "+Math.abs(b) : txt;
+    const naive = two ? (op==="+"?a+Math.abs(b):a-Math.abs(b)) : null;
+    return {q:txt+" = ?", ans, unit:"", nl:[a,step],
+      hints:[ two ? "Er staan twee tekens naast elkaar: <b>"+(op==="+"?"+ "+M:M+" "+M)+"</b>. Dat wordt <b>"+(op==="+"?M:"+")+"</b>. De som wordt: <b>"+one+"</b>."
+                  : "Er staan <b>geen</b> twee tekens naast elkaar. Je kunt meteen rekenen: <b>"+one+"</b>.",
+              "Begin bij <b>"+fmt(a)+"</b>. Ga <b>"+Math.abs(step)+"</b> stappen naar <b>"+(step>=0?"rechts":"links")+"</b>. Kijk waar de pijl eindigt."],
+      diagnose:v=>{
+        if(naive!==null && v===naive) return "Je hebt de twee tekens niet omgezet. "+(op==="+"?"+ "+M+" wordt "+M:M+" "+M+" wordt +")+".";
+        if(v===-ans) return "Het getal klopt, maar het teken niet. Kom je links of rechts van de 0 uit?";
+        if(v===a-step) return "Je bent de verkeerde kant op gezwommen. Plus is naar rechts, min is naar links.";
+        if(Math.abs(v)===Math.abs(Math.abs(a)-Math.abs(step))) return "Het lijkt erop dat je de getallen van elkaar hebt afgetrokken. Begin bij "+fmt(a)+" en spring "+Math.abs(step)+" stappen.";
+        return "";
+      }};
+  }
+  if(t.kind==="up"){
+    const ans=t.a+t.b;
+    return {q:fmt(t.a)+" + "+t.b+" = ?", ans, unit:"m", nl:[t.a,t.b],
+      hints:["Omhoog zwemmen is dichter bij de oppervlakte. Dat is <b>plus</b>: "+fmt(t.a)+" + "+t.b+".","Begin bij <b>"+fmt(t.a)+"</b> en ga <b>"+t.b+"</b> stappen naar rechts. Je blijft onder de 0."],
+      diagnose:v=>{ if(v===t.a-t.b) return "Omhoog is plus, niet min. Dex komt dichter bij 0."; if(v===-ans) return "Dex zit nog onder water, dus het antwoord is negatief."; return ""; }};
+  }
+  if(t.kind==="diff"){
+    const ans=t.hi-t.lo;
+    return {q:"Verschil tussen "+t.hi+" °C en "+fmt(t.lo)+" °C = ?", ans, unit:"graden", nl:[t.lo,ans],
+      hints:["Tel in twee stukken: van "+fmt(t.lo)+" naar 0, en van 0 naar "+t.hi+".","Van "+fmt(t.lo)+" naar 0 is "+Math.abs(t.lo)+". Van 0 naar "+t.hi+" is "+t.hi+". Tel ze op."],
+      diagnose:v=>{ if(v===t.hi+t.lo) return "Je hebt "+t.hi+" "+M+" "+Math.abs(t.lo)+" gedaan. Tel over de 0 heen: beide stukken samen."; if(v<0) return "Een verschil is altijd positief: het is een aantal graden."; return ""; }};
+  }
+  if(t.kind==="miss"){
+    const c=t.a-t.x;
+    return {q:fmt(t.a)+" "+M+" ? = "+fmt(c), ans:t.x, unit:"", nl:[t.a,c-t.a],
+      hints:["Van "+fmt(t.a)+" naar "+fmt(c)+" ga je naar <b>rechts</b>. Bij aftrekken kan dat alleen als je een <b>negatief</b> getal aftrekt (want "+M+" "+M+" wordt +).","Van "+fmt(t.a)+" naar "+fmt(c)+" is "+(c-t.a)+" stappen. Dus "+fmt(t.a)+" + "+(c-t.a)+" = "+fmt(c)+". Welk negatief getal hoort bij het vraagteken?"],
+      diagnose:v=>{ if(v===-t.x) return "Bijna! Controleer: "+fmt(t.a)+" "+M+" "+fmt(v)+" = "+fmt(t.a-v)+". Je moet een negatief getal aftrekken om naar rechts te gaan."; return "Controleer je antwoord: zet het op de plaats van het vraagteken en reken uit."; }};
+  }
+}
+
+/* ---------- Getallenlijn voor hints ---------- */
+function drawNL(svg,from,step){
+  const lo=Math.min(-25,from-2,from+step-2), hi=Math.max(10,from+2,from+step+2);
+  const min=Math.floor(lo/5)*5, max=Math.ceil(hi/5)*5;
+  const W=1000,pad=30,yL=95,x=v=>pad+(v-min)/(max-min)*(W-2*pad);
+  const col=step>=0?"#c93c22":"#1d64a8";
+  let s='<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="'+col+'"/></marker></defs>';
+  s+='<line x1="'+pad+'" x2="'+(W-pad)+'" y1="'+yL+'" y2="'+yL+'" stroke="#13233a" stroke-width="3"/>';
+  for(let v=min;v<=max;v++){ const maj=v%5===0;
+    s+='<line x1="'+x(v)+'" x2="'+x(v)+'" y1="'+(yL-(v===0?14:maj?10:6))+'" y2="'+(yL+(v===0?14:maj?10:6))+'" stroke="#13233a" stroke-width="'+(v===0?3:1.5)+'"/>';
+    if(maj) s+='<text x="'+x(v)+'" y="'+(yL+36)+'" text-anchor="middle" font-size="20" font-weight="'+(v===0?700:400)+'">'+fmt(v)+'</text>'; }
+  const x1=x(from),x2=x(from+step),h=Math.min(70,20+Math.abs(x2-x1)*.25);
+  s+='<path d="M'+x1+','+(yL-6)+' Q'+((x1+x2)/2)+','+(yL-6-h*2)+' '+x2+','+(yL-6)+'" fill="none" stroke="'+col+'" stroke-width="4" marker-end="url(#ah)"/>';
+  s+='<text x="'+((x1+x2)/2)+'" y="'+Math.max(18,yL-6-h-8)+'" text-anchor="middle" font-size="22" font-weight="700" fill="'+col+'">'+(step>=0?"+":M)+Math.abs(step)+'</text>';
+  s+='<circle cx="'+x1+'" cy="'+yL+'" r="9" fill="#13233a"/><circle cx="'+x2+'" cy="'+yL+'" r="10" fill="'+col+'" stroke="#13233a" stroke-width="2"/>';
+  svg.innerHTML=s;
+}
+
+/* ---------- Kamer opbouwen ---------- */
+// dieptemeter
+(function(){ let s=""; for(let d=0; d<=120; d+=20){ const y=10+(d/120)*280; s+='<line x1="8" x2="22" y1="'+y+'" y2="'+y+'" stroke="#7fd3f5" stroke-width="2"/><text x="44" y="'+(y+5)+'" text-anchor="end" font-family="Atkinson Hyperlegible, sans-serif" font-size="12" fill="#cfe8f3">'+(d===0?"0":M+d)+'</text>'; } $("#depthTicks").innerHTML=s; })();
+// zeesneeuw
+(function(){ let s=""; for(let i=0;i<40;i++){ const x=40+Math.random()*720, y=60+Math.random()*80, r=.8+Math.random()*1.6, d=14+Math.random()*16, dl=-Math.random()*30; s+='<circle class="flake" cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" r="'+r.toFixed(1)+'" style="animation-duration:'+d.toFixed(1)+'s;animation-delay:'+dl.toFixed(1)+'s"/>'; } $("#snow").innerHTML=s; })();
+// bellen
+(function(){ let s=""; for(let i=0;i<14;i++){ const x=60+Math.random()*680, r=3+Math.random()*7, d=5+Math.random()*7, dl=-Math.random()*10; s+='<circle class="bubble" cx="'+x.toFixed(0)+'" cy="'+(500+Math.random()*30).toFixed(0)+'" r="'+r.toFixed(1)+'" style="animation-duration:'+d.toFixed(1)+'s;animation-delay:'+dl.toFixed(1)+'s"/>'; } $("#bubbles").innerHTML=s; })();
+
+function mix(c1,c2,t){ const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)); const a=p(c1),b=p(c2); return "#"+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
+function setDepth(level){ // level 0..12
+  const depth=-120+level*10, t=level/12;
+  $("#wTop").setAttribute("stop-color",mix("#0a3655","#2f9fd6",t));
+  $("#wBot").setAttribute("stop-color",mix("#03121f","#0f5a86",t));
+  $("#depthArrow").setAttribute("transform","translate(0,"+(10+(-depth/120)*280)+")");
+  $("#depthTxt").textContent=(depth===0?"0":M+(-depth))+" m";
+}
+
+/* ---------- Spelstatus ---------- */
+let tasks=fixedSet(), lvl=0, errs=0, hintsUsed=0, cur=null, busy=false, triesHere=0;
+const hatchEl=$("#hatches");
+for(let i=0;i<12;i++) hatchEl.appendChild(document.createElement("i"));
+function updateTop(){
+  [...hatchEl.children].forEach((h,i)=>{ h.className=i<lvl?"open":i===lvl?"now":""; h.title="Luik "+(i+1); });
+  $("#sErr").textContent=errs; $("#sHint").textContent=hintsUsed;
+}
+function loadTask(){
+  cur=build(tasks[lvl]); triesHere=0;
+  $("#pRoom").textContent="Luik "+(lvl+1)+" van 12";
+  $("#pStory").textContent=tasks[lvl].story;
+  $("#pSom").textContent=cur.q;
+  $("#pUnit").textContent=cur.unit;
+  $("#panelNr").textContent=lvl+1;
+  $("#roomLabel").textContent="Ruimte "+(lvl+1)+" van 12";
+  $("#lamp").setAttribute("fill","#ff7a59");
+  const inp=$("#ans"); inp.value=""; inp.readOnly=false; $("#check").disabled=false;
+  const fb=$("#fb"); fb.className="fb"; fb.innerHTML="";
+  const hr=$("#hintrow"), hb=$("#hintbox"); hr.innerHTML=""; hb.innerHTML="";
+  cur.hints.forEach((h,i)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="hbtn"; b.textContent="Hint "+(i+1); b.disabled=i>0;
+    b.addEventListener("click",()=>{
+      if(b.dataset.open) return; b.dataset.open="1"; b.disabled=true; hintsUsed++; updateTop();
+      const d=document.createElement("div"); d.className="hint"; d.innerHTML="<b>Hint "+(i+1)+":</b> "+h; hb.appendChild(d);
+      if(i===cur.hints.length-1){ const sv=document.createElementNS("http://www.w3.org/2000/svg","svg"); sv.setAttribute("viewBox","0 0 1000 150"); sv.setAttribute("class","nl"); sv.setAttribute("role","img"); sv.setAttribute("aria-label","Getallenlijn als hint"); d.appendChild(sv); drawNL(sv,cur.nl[0],cur.nl[1]); }
+      if(hr.children[i+1]) hr.children[i+1].disabled=false;
+    });
+    hr.appendChild(b);
+  });
+  updateTop(); setDepth(lvl);
+  setTimeout(()=>inp.focus({preventScroll:true}),50);
+}
+
+function parseAns(v){ v=String(v).replace(/[−–—]/g,"-").replace(/\s+/g,""); return /^[-+]?\d+$/.test(v)?parseInt(v,10):null; }
+$("#sign").addEventListener("click",()=>{ const inp=$("#ans"); if(inp.readOnly) return; let v=inp.value.replace(/[−–—]/g,"-").trim(); inp.value=v.startsWith("-")?v.slice(1):M+v; inp.focus(); });
+
+function check(){
+  if(busy) return;
+  const v=parseAns($("#ans").value), fb=$("#fb");
+  fb.className="fb show";
+  if(v===null){ fb.classList.add("bad"); fb.textContent="Typ een heel getal. Gebruik de knop "+M+" / + voor een minteken."; return; }
+  if(v===cur.ans){
+    busy=true; fb.classList.add("good");
+    fb.innerHTML="<b>Klik!</b> De code klopt. Het luik gaat open.";
+    $("#ans").readOnly=true; $("#check").disabled=true;
+    $("#lamp").setAttribute("fill","#3fa37a");
+    openHatch();
+    return;
+  }
+  errs++; triesHere++; updateTop();
+  fb.classList.add("bad");
+  let msg=cur.diagnose(v)||"Die code klopt niet. Probeer het opnieuw.";
+  if(triesHere>=2) msg+=" Gebruik een hint als je vastzit.";
+  fb.innerHTML="<b>Het luik blijft dicht.</b> "+msg;
+  const sc=$("#scene"); sc.classList.remove("shake"); void sc.offsetWidth; if(!reduce) sc.classList.add("shake");
+}
+$("#check").addEventListener("click",check);
+$("#ans").addEventListener("keydown",e=>{ if(e.key==="Enter") check(); });
+
+/* ---------- Animatie: luik open, Dex zwemt omhoog ---------- */
+const dex=$("#dex"), wheel=$("#wheel"), door=$("#door"), fade=$("#fade");
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
+async function openHatch(){
+  wheel.style.transform="rotate(360deg)";
+  await wait(800);
+  door.style.transform="scaleY(0.06) translateY(-40px)";
+  await wait(600);
+  dex.style.transform="translate(400px,190px) rotate(-70deg)";
+  await wait(1000);
+  dex.style.transform="translate(400px,-120px) rotate(-85deg)";
+  await wait(900);
+  lvl++;
+  updateTop();
+  if(lvl>=12){ finish(); return; }
+  fade.classList.add("on");
+  await wait(480);
+  // nieuwe kamer: luik dicht, Dex komt van onder binnen
+  wheel.style.transition="none"; door.style.transition="none"; dex.style.transition="none";
+  wheel.style.transform="rotate(0deg)"; door.style.transform="none";
+  dex.style.transform="translate(380px,620px) rotate(-60deg)";
+  loadTask();
+  void dex.getBoundingClientRect();
+  wheel.style.transition=""; door.style.transition=""; dex.style.transition="";
+  fade.classList.remove("on");
+  await wait(80);
+  dex.style.transform="translate(380px,330px) rotate(0deg)";
+  await wait(1100);
+  busy=false;
+}
+
+function finish(){
+  setDepth(12);
+  const pts=errs+hintsUsed, stars=pts<=2?3:pts<=6?2:1;
+  $("#stars").textContent="★".repeat(stars)+"☆".repeat(3-stars);
+  $("#stars").setAttribute("aria-label",stars+" van de 3 sterren");
+  $("#endTxt").innerHTML="Je hebt alle 12 luiken geopend. Dex is van "+M+"120 m naar 0 m gezwommen: dat is <b>120 meter</b> omhoog.<br>Fouten: <b>"+errs+"</b> · Hints: <b>"+hintsUsed+"</b>. "+(stars===3?"Topduiker!":stars===2?"Goed gedaan! Lukt het de volgende keer met minder hints?":"Gelukt! Oefen nog eens met nieuwe sommen.");
+  $("#endScreen").hidden=false;
+  $("#againBtn").focus();
+}
+function reset(newSet){
+  tasks=newSet?randomSet():fixedSet(); lvl=0; errs=0; hintsUsed=0; busy=false;
+  wheel.style.transform=""; door.style.transform="";
+  dex.style.transition="none"; dex.style.transform="translate(380px,330px)"; void dex.getBoundingClientRect(); dex.style.transition="";
+  $("#endScreen").hidden=true; loadTask();
+}
+$("#startBtn").addEventListener("click",()=>{ $("#startScreen").hidden=true; loadTask(); });
+$("#againBtn").addEventListener("click",()=>reset(true));
+$("#restart").addEventListener("click",()=>{ $("#startScreen").hidden=true; reset(lvl>0); });
+
+loadTask();
+$("#startBtn").focus();
+})();
+</script>
+</body>
+</html>
