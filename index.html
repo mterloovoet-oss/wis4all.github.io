@@ -13,18 +13,58 @@
 .poster{position:relative;aspect-ratio:1;max-width:430px;width:100%;margin:auto;background-color:#fbd1ba;background-image:linear-gradient(#49254420 1px,transparent 1px),linear-gradient(90deg,#49254420 1px,transparent 1px);background-size:10% 10%;border-radius:50% 50% 1.5rem 1.5rem;overflow:hidden;color:var(--plum)}.poster span{position:absolute}.orbit{border:1px solid currentColor;border-radius:50%;width:68%;height:39%;top:31%;left:16%;transform:rotate(-42deg)}.orbit.second{transform:rotate(42deg)}.disc{width:38%;aspect-ratio:1;top:31%;left:31%;border-radius:50%;background:var(--plum);box-shadow:inset -15px -15px #2e1935}.dot{width:10%;aspect-ratio:1;top:22%;left:66%;border-radius:50%;background:var(--mint);border:1px solid var(--ink)}.pi{top:66%;left:14%;font:italic clamp(2rem,5vw,5rem)/1 Georgia}.star{top:12%;left:29%;font-size:clamp(1.4rem,4vw,3rem)}.root{right:11%;bottom:9%;font:italic 1.25rem Georgia}
 section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,4rem)}.lab p{margin:.65rem 0 0}.tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.4rem 0 .9rem}.tabs button{border:1px solid var(--plum);color:var(--plum);background:transparent;border-radius:100px;padding:.5rem 1rem;cursor:pointer;font-weight:700}.tabs button[aria-pressed=true]{background:var(--plum);color:white}.tabs button:hover:not([aria-pressed=true]){background:var(--lavender)}
 .demo{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:1.35rem;overflow:hidden;background:#fffdf9}.controls{padding:clamp(1.25rem,4vw,3rem)}h3{font-size:1.5rem;margin:0;line-height:1.2}.controls label{display:block;font-weight:750;margin-top:1.45rem}.controls input{width:100%;accent-color:var(--plum);margin:.65rem 0}.result{display:block;background:var(--lavender);border-radius:.6rem;padding:.6rem .85rem;margin:.5rem 0;font-weight:750;font-variant-numeric:tabular-nums}.stage{background:var(--mint);min-width:0;display:grid;place-items:center;padding:1rem}.stage canvas{width:min(100%,440px);height:auto;display:block}.topics{border-top:1px solid var(--rule);padding:1.1rem 0}.topics summary{cursor:pointer;font-weight:750}.topics p{max-width:65ch}footer{border-top:1px solid var(--rule);padding:1.5rem 0}footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem}footer a:last-child{font-size:.9rem}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1rem;margin-top:1.6rem}.level{display:flex;flex-direction:column;gap:.55rem;border:1px solid var(--rule);border-radius:1.35rem;padding:1.5rem 1.4rem;min-height:300px}@media(max-width:740px){.level{min-height:0}.level .badge,.level .cta{margin-top:.4rem}}.level.bk{background:var(--peach)}.level.mavo{background:var(--lavender)}.level.havo{background:var(--mint)}.level.vwo{background:#d9eef0}.level .tag{margin:0;font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--plum)}.level h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:clamp(2.3rem,4vw,3rem);letter-spacing:-.05em;line-height:1}.level p{margin:0}.level ul{list-style:none;padding:0;margin:.3rem 0 0;display:grid;gap:.35rem;font-weight:650}.level ul a{text-underline-offset:4px}.level ul a::before{content:"→ ";}.level .cta{margin-top:auto;align-self:flex-start;background:var(--plum);color:var(--paper)}.level .cta:hover{background:#2e1935}.level.soon{border-style:dashed}.badge{margin-top:auto;align-self:flex-start;border:1px solid var(--plum);border-radius:100px;padding:.35rem .9rem;font-weight:700;font-size:.9rem;color:var(--plum)}
 @media(max-width:740px){.hero .wrap,.demo{grid-template-columns:1fr}.poster{width:min(74%,290px)}.stage canvas{width:min(100%,340px)}.hero h1{max-width:12ch}}
 @media(max-width:400px){.wrap{width:calc(100% - 2rem)}nav{font-size:.85rem;gap:.65rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body id="boven">
-<header><div class="wrap"><a class="brand" aria-label="Wis4All, naar boven" href="#boven">wis<span>4all</span></a><nav aria-label="Hoofdnavigatie"><a href="#ontdek">Ontdek</a><a href="#begrippen">Begrippen</a><a href="./mavo-1/">MAVO 1</a></nav></div></header>
+<header><div class="wrap"><a class="brand" aria-label="Wis4All, naar boven" href="#boven">wis<span>4all</span></a><nav aria-label="Hoofdnavigatie"><a href="#niveaus">Niveaus</a><a href="#ontdek">Ontdek</a><a href="#begrippen">Begrippen</a></nav></div></header>
 <main>
 <div class="hero"><div class="wrap">
 <div><p class="intro">Wiskunde om te ontdekken</p><h1>‘Achter elk getal zit iets om <em>nieuwsgierig</em> naar te zijn.’</h1><p class="desc">Schuif, kijk wat er verandert en ontdek hoe vormen, breuken en grafieken werken.</p><a class="cta" href="#ontdek">Probeer het uit ↓</a></div>
 <div class="poster" aria-hidden="true"><span class="orbit"></span><span class="orbit second"></span><span class="disc"></span><span class="dot"></span><span class="star">✦</span><span class="pi">π</span><span class="root">√4 = 2</span></div>
 </div></div>
+<section class="lab wrap" id="niveaus" aria-labelledby="niveaus-title">
+<h2 id="niveaus-title">Kies je niveau</h2>
+<p>Lessen, oefeningen en spellen per schoolsoort.</p>
+<div class="levels">
+<article class="level bk">
+<p class="tag">4 jaar · basis en kader</p>
+<h3>VMBO BK</h3>
+<p>Negatieve getallen optellen en aftrekken, stap voor stap.</p>
+<ul>
+<li><a href="./Bordles%20negatieve%20getallen.html">Bordles</a></li>
+<li><a href="./VMBO%20BBL%20Negatieve%20getallen%20optellen%20en%20aftrekken.html">Zelfstudie</a></li>
+<li><a href="./Dex.html">Spel: Dex ontsnapt uit de diepte</a></li>
+</ul>
+<a class="cta" href="./vmbo-bk/">Naar VMBO BK →</a>
+</article>
+<article class="level mavo">
+<p class="tag">4 jaar · gemengd/theoretisch</p>
+<h3>MAVO</h3>
+<p>Rekenen met negatieve getallen en een onderwaterrobot besturen.</p>
+<ul>
+<li><a href="./mavo-1/bordles.html">Bordles</a></li>
+<li><a href="./mavo-1/missie-onder-nul.html">Spel: Missie Onder Nul</a></li>
+</ul>
+<a class="cta" href="./mavo-1/">Naar MAVO 1 →</a>
+</article>
+<article class="level havo soon">
+<p class="tag">5 jaar</p>
+<h3>HAVO</h3>
+<p>Hier komen binnenkort lessen en spellen.</p>
+<span class="badge">Binnenkort</span>
+</article>
+<article class="level vwo soon">
+<p class="tag">6 jaar</p>
+<h3>VWO</h3>
+<p>Hier komen binnenkort lessen en spellen.</p>
+<span class="badge">Binnenkort</span>
+</article>
+</div>
+</section>
 <section class="lab wrap" id="ontdek">
 <h2>Speel met wiskunde</h2>
 <p>Kies een onderwerp en beweeg de schuifregelaar.</p>
@@ -41,13 +81,6 @@ section.lab{padding-block:clamp(2.5rem,6vw,5rem)}h2{font-size:clamp(2.45rem,5vw,
 <details class="topics"><summary>Omtrek en oppervlakte</summary><p>De omtrek is de lengte langs de rand. De oppervlakte is de grootte van het vlak binnen die rand. Bij een rechthoek bereken je de oppervlakte met breedte × hoogte.</p></details>
 <details class="topics"><summary>Teller en noemer</summary><p>De noemer geeft aan in hoeveel gelijke stukken het geheel verdeeld is. De teller geeft aan hoeveel van die stukken je neemt.</p></details>
 <details class="topics"><summary>Een stijgende of dalende lijn</summary><p>In de formule y = ax geeft a aan hoeveel y verandert als x met 1 toeneemt. Bij a &gt; 0 stijgt de lijn, bij a &lt; 0 daalt ze en bij a = 0 loopt ze horizontaal.</p></details>
-</section>
-<section class="lab wrap" aria-labelledby="mavo-title">
-<h2 id="mavo-title">MAVO 1</h2>
-<p>Leer rekenen met negatieve getallen en bestuur daarna een onderwaterrobot.</p>
-<p><a class="cta" href="./mavo-1/">Naar MAVO 1 →</a></p>
-<p><a class="cta" href="./VMBO%20BBL%20Negatieve%20getallen%20optellen%20en%20aftrekken.html">VMBO BBL · Negatieve getallen →</a></p>
-<p><a class="cta" href="./Dex.html">Spel · Dex ontsnapt uit de diepte →</a></p>
 </section>
 </main>
 <footer><div class="wrap"><a class="brand" href="#boven">wis<span>4all</span></a><a href="#boven">Naar boven ↑</a></div></footer>
