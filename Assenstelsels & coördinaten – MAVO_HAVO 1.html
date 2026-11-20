@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zelfstudie 1 – Assenstelsels & coördinaten – MAVO/HAVO 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>:root{
+  --ink:#1d2433; --muted:#5b6476; --bg:#f6f7fb; --card:#ffffff; --line:#d9deea;
+  --brand:#1f4e8c; --brand2:#2a7fbf; --accent:#e4572e; --ok:#1e8a4c; --warn:#b26b00;
+  --hint:#fff7e0; --hintline:#f0c64a; --ans:#e9f7ef; --ansline:#5cbf86;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Nunito","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:19px;line-height:1.5}
+h1,h2,h3{line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.7rem;color:var(--brand)} h3{font-size:1.2rem}
+button{font:inherit;cursor:pointer}
+header.top{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+header.top .title{font-weight:800;font-size:1.05rem;margin-right:auto}
+header.top .title small{display:block;font-weight:600;opacity:.8;font-size:.8rem}
+.timer{display:flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.12);border-radius:10px;padding:.2rem .5rem}
+.timer .t{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.25rem;min-width:4.2ch;text-align:center}
+.timer.done .t{color:#ffd166}
+.timer button,.tbtn{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:.2rem .55rem;font-size:.9rem}
+.timer button:hover,.tbtn:hover{background:rgba(255,255,255,.3)}
+.tbtn[aria-pressed="true"]{background:#ffd166;color:#1d2433;font-weight:800}
+nav.phases{display:flex;gap:.35rem;flex-wrap:wrap;padding:.6rem 1rem;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:56px;z-index:15}
+nav.phases button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:.25rem .8rem;font-size:.9rem;color:var(--muted)}
+nav.phases button .min{font-weight:800;color:var(--brand2);margin-right:.3rem}
+nav.phases button.active{background:var(--brand2);border-color:var(--brand2);color:#fff}
+nav.phases button.active .min{color:#fff}
+main{max-width:1180px;margin:0 auto;padding:1.2rem 1rem 4rem}
+section.phase{display:none}
+section.phase.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.3rem;margin:0 0 1rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.row{display:flex;gap:1.2rem;flex-wrap:wrap}
+.row>.col{flex:1 1 360px;min-width:0}
+.goal{border-left:6px solid var(--brand2)}
+.goal ul{margin:.2rem 0 0 1.1rem;padding:0}
+.label{display:inline-block;font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--brand2);border-radius:6px;padding:.05rem .45rem;margin-bottom:.4rem}
+.label.orange{background:var(--accent)} .label.green{background:var(--ok)} .label.gray{background:#6b7280}
+.big{font-size:1.3rem}
+.muted{color:var(--muted)}
+.btn{background:var(--brand2);color:#fff;border:0;border-radius:10px;padding:.45rem 1rem;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--brand2);border:2px solid var(--brand2)}
+.btn.small{padding:.25rem .65rem;font-size:.9rem}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.hints{margin-top:.7rem}
+.hint{display:none;background:var(--hint);border:1px solid var(--hintline);border-radius:10px;padding:.5rem .8rem;margin-top:.45rem}
+.hint.show{display:block;animation:fade .2s ease}
+.hint b{color:var(--warn)}
+.hintbtn{background:#fff;border:2px solid var(--hintline);color:#7a5600;border-radius:10px;padding:.3rem .8rem;font-weight:700}
+.hintbtn[disabled]{opacity:.45;cursor:default}
+.answer{display:none;background:var(--ans);border:1px solid var(--ansline);border-radius:10px;padding:.55rem .85rem;margin-top:.7rem}
+body.teacher .answer{display:block}
+.teacher-only{display:none}
+body.teacher .teacher-only{display:block}
+.answer::before{content:"Antwoord (docent)";display:block;font-size:.75rem;font-weight:800;text-transform:uppercase;color:var(--ok);letter-spacing:.04em}
+.reveal{display:none} .reveal.show{display:block;animation:fade .2s ease}
+.grid-wrap{position:relative;max-width:520px}
+.grid-svg{width:100%;height:auto;display:block;background:#fff;border-radius:10px;touch-action:none}
+.grid-read{font-weight:800;color:var(--brand);min-height:1.6em;margin-top:.3rem}
+.feedback{font-weight:700;margin-top:.4rem;min-height:1.4em}
+.feedback.good{color:var(--ok)} .feedback.bad{color:var(--accent)}
+input.num{width:4.2em;font:inherit;font-size:1.05rem;padding:.15rem .3rem;border:2px solid var(--line);border-radius:8px;text-align:center}
+input.num.wide{width:6.5em}
+input.num.good{border-color:var(--ok);background:#effaf3} input.num.bad{border-color:var(--accent);background:#fff1ec}
+select{font:inherit;padding:.15rem .3rem;border:2px solid var(--line);border-radius:8px}
+.theory{background:#eef6ff;border:2px solid #9cc3ec;border-radius:14px;padding:.8rem 1rem}
+.theory b{color:var(--brand)}
+.pill{display:inline-block;background:#eef2ff;border-radius:999px;padding:.05rem .6rem;font-weight:700;color:var(--brand);margin:.1rem 0}
+.qbtns{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0}
+.qbtns button{border:2px solid var(--brand2);background:#fff;color:var(--brand2);border-radius:10px;padding:.3rem .8rem;font-weight:800;min-width:3.2rem}
+.qbtns button.good{background:var(--ok);border-color:var(--ok);color:#fff}
+.small{font-size:.88rem}
+footer.note{max-width:1180px;margin:0 auto 2rem;padding:0 1rem;color:var(--muted);font-size:.85rem}
+@media (max-width:700px){body{font-size:17px} nav.phases{top:0;position:static}}
+.chk{display:block;background:#fff;border:2px solid var(--line);border-radius:10px;padding:.35rem .7rem;margin:.3rem 0;cursor:pointer}
+.chk.good{border-color:var(--ok);background:#effaf3}.chk.bad{border-color:var(--accent);background:#fff1ec}
+.chk input{transform:scale(1.2);margin-right:.4rem}
+.schrift{background:#fffdf5;border:2px solid #e9d9a6;border-radius:14px;padding:.8rem 1rem}
+.schrift h3::before{content:"✏️ "}
+.kd{font-size:.8rem;color:var(--muted)}
+.todo{background:#fff;border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;padding:.35rem .7rem;margin:.35rem 0}
+.legend{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font-size:.95rem;margin:.4rem 0}
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.6rem 0}
+.cards4 div{background:#fff;border:2px solid var(--brand2);border-radius:12px;text-align:center;font-size:1.6rem;font-weight:800;padding:.6rem 0;color:var(--brand)}
+@media (max-width:600px){.cards4{grid-template-columns:repeat(2,1fr)}}
+ol.steps li{margin:.2rem 0}
+table.reg{border-collapse:collapse;font-size:1.1rem;margin:.4rem 0}
+table.reg td{border:1px solid var(--line);padding:.3rem .6rem;text-align:center}
+table.reg td.arrow{border:0;color:var(--accent);font-weight:800;font-size:.9rem}
+/* aanvullingen zelfstudie */
+nav.steps{display:flex;gap:.3rem;flex-wrap:wrap;padding:.6rem 1rem;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:52px;z-index:15}
+nav.steps button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:.2rem .7rem;font-size:.85rem;color:var(--muted)}
+nav.steps button.active{background:var(--brand2);border-color:var(--brand2);color:#fff}
+nav.steps button.done::before{content:"✓ ";color:var(--ok);font-weight:900}
+nav.steps button.active.done::before{color:#fff}
+.progress{height:6px;background:#e6eaf3}
+.progress>div{height:100%;background:var(--ok);width:0;transition:width .3s}
+.stepfoot{display:flex;justify-content:space-between;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+.mini{border-top:1px dashed var(--line);padding-top:.9rem;margin-top:.9rem}
+.mini:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.mini h3{color:var(--accent);font-size:1.15rem}
+.mc{display:flex;flex-direction:column;gap:.35rem;margin:.4rem 0}
+.mc button{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;padding:.4rem .7rem}
+.mc button:hover{border-color:var(--brand2)}
+.mc button.good{border-color:var(--ok);background:#effaf3}
+.mc button.bad{border-color:var(--accent);background:#fff1ec}
+.solution{display:none;background:var(--ans);border:1px solid var(--ansline);border-radius:10px;padding:.55rem .85rem;margin-top:.6rem}
+.solution.show{display:block;animation:fade .2s ease}
+.solution::before{content:"Uitwerking";display:block;font-size:.75rem;font-weight:800;text-transform:uppercase;color:var(--ok);letter-spacing:.04em}
+.lockmsg{font-size:.85rem;color:var(--muted)}
+.streak{font-size:1.4rem;letter-spacing:.15rem}
+.todo{background:#fff;border-left:5px solid var(--accent);border-radius:8px;padding:.5rem .8rem;margin:.5rem 0}
+.you{font-weight:800;color:var(--brand)}
+.tip{background:#f3f0ff;border:1px solid #c9bdf5;border-radius:10px;padding:.5rem .8rem;margin-top:.6rem}
+.tip::before{content:"Studietip ";font-weight:800;color:#5b3fc4}
+ol.steps li{margin:.25rem 0}
+@media print{nav,header,.stepfoot,.hintbtn{display:none!important} section.step{display:block!important}}
+.btn[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+
+.huge{font-size:2.4rem;font-weight:800;text-align:center;margin:.5rem 0}
+textarea{width:100%;font:inherit;font-size:.95rem;border:2px solid var(--line);border-radius:10px;padding:.5rem;min-height:6rem}
+
+/* leesbaarheid: tekst in knoppen en invulvelden altijd zwart */
+.mc button,.chk,.cards4 div{color:#1d2433!important}
+.mc button{background:#fff}
+input,select,textarea{color:#1d2433;background:#fff}
+select option{color:#1d2433;background:#fff}
+</style></head><body>
+<header class="top">
+  <div class="title">Assenstelsels &amp; coördinaten <small>MAVO/HAVO 1</small></div>
+  <button class="tbtn" id="resetProgress" title="Voortgang wissen">↺ Opnieuw beginnen</button>
+</header>
+<div class="progress"><div></div></div>
+<nav class="steps" aria-label="Stappen"></nav>
+<main>
+
+<!-- STAP 1 -->
+<section class="phase step" data-title="Start">
+  <div class="card goal">
+    <span class="label">Leerdoel</span>
+    <p class="big">Ik kan een assenstelsel tekenen, en punten in een assenstelsel tekenen en aflezen.</p>
+    <b>Zo weet je dat het gelukt is</b>
+    <ul>
+      <li>Ik kan een punt zoals (−4, 1) in een assenstelsel zetten.</li>
+      <li>Ik kan de coördinaten van een punt opschrijven: eerst x, dan y.</li>
+      <li>Ik kan in mijn schrift een assenstelsel tekenen met de 4 stappen van het werkschema.</li>
+    </ul>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h3>Waarom leer je dit?</h3>
+      <p>Met twee getallen wijs je elke plek precies aan: op een plattegrond, bij zeeslag, in een game of met GPS. Straks teken je in dit hoofdstuk grafieken, en die staan altijd in een assenstelsel.</p>
+      <p><b>Link met aardrijkskunde:</b> in de atlas zoek je een plaats op met een kaartvak, zoals B4. Een assenstelsel werkt net zo, maar met getallen en een vast beginpunt.</p>
+    </div>
+    <div class="col card">
+      <h3>Dit heb je nodig</h3>
+      <ul><li>je schrift en een potlood</li><li>roosterpapier (of ruitjespapier)</li><li>een geodriehoek</li></ul>
+      <h3>Zo werk je</h3>
+      <ol>
+        <li>Werk de stappen bovenaan van links naar rechts af.</li>
+        <li>Loop je vast? Klik op <b>💡 Hint</b>. Probeer het daarna opnieuw.</li>
+        <li>Een <b>uitwerking</b> bekijk je pas als je het zelf geprobeerd hebt.</li>
+        <li>Je voortgang wordt in deze browser onthouden.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 2 -->
+<section class="phase step" data-title="Denkopdracht">
+  <div class="row">
+    <div class="col card">
+      <span class="label orange">Denkopdracht · 3 minuten</span>
+      <h2>Waar staat de ijscokar?</h2>
+      <p>Je vriend belt je. Hij staat bij de fontein ⛲ en heeft dezelfde kaart, maar hij ziet de ijscokar 🍦 niet.</p>
+      <p><b>Schrijf hieronder in één of twee zinnen op hoe je vriend precies bij de ijscokar komt.</b> Je mag niet “daar” zeggen.</p>
+      <textarea id="treasureTxt" placeholder="Mijn uitleg: …"></textarea>
+      <p class="lockmsg" id="treasureLock">Schrijf eerst je uitleg (minstens één zin). Daarna kun je verder.</p>
+      <div class="reveal" id="treasureMore">
+        <p><b>Denk na:</b> komt je vriend met jouw zin op <u>precies</u> dezelfde plek uit? Wat als hij eerst omhoog gaat in plaats van opzij?</p>
+        <div class="hints">
+          <div class="hint"><b>Hint 1</b> Je hebt een vast beginpunt nodig. De fontein is een goed beginpunt.</div>
+          <div class="hint"><b>Hint 2</b> “3 en 2” kun je lezen als 3 opzij en 2 omhoog, of andersom. Je hebt een afspraak over de volgorde nodig.</div>
+        </div>
+        <p><button class="btn ghost small" id="showDeal">Toon de afspraak van wiskundigen</button></p>
+        <div class="reveal theory" id="deal">
+          <b>De afspraak</b>
+          <ul style="margin:.3rem 0 0 1.1rem;padding:0">
+            <li>Je begint altijd in hetzelfde punt: de <b>oorsprong O</b>. Hier is dat de fontein.</li>
+            <li>Eerst ga je <b>naar rechts of links</b>, daarna <b>omhoog of omlaag</b>.</li>
+            <li>De ijscokar staat bij <b>(3, 2)</b>: vanuit O 3 naar rechts en 2 omhoog.</li>
+          </ul>
+          <p style="margin-bottom:0">Kijk nog eens naar je eigen zin. Had jij een beginpunt en een volgorde?</p>
+        </div>
+      </div>
+    </div>
+    <div class="col card"><div class="grid-wrap" id="g-schat"></div><p class="small muted" id="schatCap">Er staan nog geen getallen bij.</p></div>
+  </div>
+  <div class="card">
+    <span class="label gray">Opwarmer · negatieve getallen</span>
+    <p>Het is −3 °C. Het wordt 5 graden warmer. Hoe warm is het nu? <input class="num" data-ans="2"> °C</p>
+    <p>Het is 1 °C. Het wordt 4 graden kouder. Hoe koud is het nu? <input class="num" data-ans="-3"> °C</p>
+    <button class="btn small" id="warmCheck">Controleer</button> <span class="feedback" id="warmFb"></span>
+    <div class="hints"><div class="hint"><b>Hint</b> Denk aan een thermometer: warmer is omhoog, kouder is omlaag. Onder 0 staan de min-getallen.</div></div>
+  </div>
+</section>
+
+<!-- STAP 3 -->
+<section class="phase step" data-title="Ontdekken">
+  <div class="card">
+    <span class="label orange">Ontdek het zelf · 10 minuten</span>
+    <p>Elke opdracht is een klein stapje moeilijker. Klik in het assenstelsel of vul in. Je krijgt meteen feedback.</p>
+
+    <div class="mini">
+      <h3>1 · Naar de ijscokar</h3>
+      <div class="row"><div class="col">
+        <p>De ijscokar staat bij <b>(3, 2)</b>: vanuit O 3 naar rechts en dan 2 omhoog.<br><span class="todo">Klik op de plek van de ijscokar.</span></p>
+        <p class="feedback" id="fb1a"></p>
+        <p>Klik nu op de draaimolen bij <b>(1, 4)</b>. <span class="feedback" id="fb1b"></span></p>
+        <p>Staan de draaimolen (1, 4) en de snackbar (4, 1) op dezelfde plek?</p>
+        <div class="mc" data-fb="fb1c">
+          <button data-ok data-why="Nee: bij de draaimolen ga je 1 opzij en 4 omhoog, bij de snackbar 4 opzij en 1 omhoog. Zelfde getallen, andere plek. <b>De volgorde doet ertoe: eerst x, dan y.</b>">Nee, dat zijn verschillende plekken</button>
+          <button data-why="Kijk nog eens. Klik zelf op (4, 1) en vergelijk met (1, 4).">Ja, het zijn dezelfde getallen</button>
+        </div>
+        <p class="feedback" id="fb1c"></p>
+        <div class="hints"><div class="hint"><b>Hint</b> Zet je vinger op O. Het eerste getal: zoveel hokjes naar rechts. Het tweede getal: zoveel hokjes omhoog.</div></div>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g1"></div></div></div>
+    </div>
+
+    <div class="mini">
+      <h3>2 · Lees af</h3>
+      <div class="row"><div class="col" id="m2">
+        <p>Schrijf de coördinaten van de punten op.</p>
+        <p>A = ( <input class="num" data-ans="2"> , <input class="num" data-ans="4"> )</p>
+        <p>B = ( <input class="num" data-ans="4"> , <input class="num" data-ans="1"> )</p>
+        <p>C = ( <input class="num" data-ans="1"> , <input class="num" data-ans="3"> )</p>
+        <button class="btn small" id="c2">Controleer</button> <span class="feedback" id="fb2"></span>
+        <div class="hints"><div class="hint"><b>Hint 1</b> Ga vanuit O langs de horizontale lijn tot je recht onder het punt staat. Tel de hokjes: dat is het eerste getal.</div><div class="hint"><b>Hint 2</b> Tel daarna hoeveel hokjes je omhoog moet: dat is het tweede getal.</div></div>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g2"></div></div></div>
+    </div>
+
+    <div class="mini">
+      <h3>3 · Naar links</h3>
+      <div class="row"><div class="col">
+        <p>Je kunt vanuit O ook naar <b>links</b>. Het restaurant staat 2 naar links en 1 omhoog. Dat schrijf je als <b>(−2, 1)</b>.</p>
+        <p class="todo">Klik op de vlindertuin bij (−4, 2).</p>
+        <p class="feedback" id="fb3a"></p>
+        <p id="m3">“3 naar links en 5 omhoog” schrijf je als ( <input class="num" data-ans="-3"> , <input class="num" data-ans="5"> ) <button class="btn small" id="c3">Controleer</button></p>
+        <p class="feedback" id="fb3b"></p>
+        <div class="hints"><div class="hint"><b>Hint</b> Een minteken bij het eerste getal betekent: naar links.</div></div>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g3"></div></div></div>
+    </div>
+
+    <div class="mini">
+      <h3>4 · Ook omlaag</h3>
+      <div class="row"><div class="col" id="m4">
+        <p>Bij <b>(−4, −2)</b> ga je 4 naar links en 2 omlaag. Lees de punten af.</p>
+        <p>E = ( <input class="num" data-ans="-2"> , <input class="num" data-ans="-1"> )</p>
+        <p>F = ( <input class="num" data-ans="3"> , <input class="num" data-ans="-2"> )</p>
+        <p>G = ( <input class="num" data-ans="1"> , <input class="num" data-ans="-3"> )</p>
+        <p>H = ( <input class="num" data-ans="-4"> , <input class="num" data-ans="2"> )</p>
+        <button class="btn small" id="c4">Controleer</button> <span class="feedback" id="fb4"></span>
+        <div class="hints"><div class="hint"><b>Hint 1</b> Ligt het punt links van de verticale lijn door O? Dan is het eerste getal negatief.</div><div class="hint"><b>Hint 2</b> Ligt het punt onder de horizontale lijn door O? Dan is het tweede getal negatief.</div></div>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g4"></div></div></div>
+    </div>
+
+    <div class="mini">
+      <h3>5 · Op de lijnen</h3>
+      <div class="row"><div class="col">
+        <p>De horizontale lijn door O heet de <b>x-as</b>, de verticale lijn heet de <b>y-as</b>. Bekijk K(0, 2), L(−3, 0), M(0, −4) en N(4, 0).</p>
+        <p>Welke regel klopt?</p>
+        <div class="mc" data-fb="fb5">
+          <button data-why="Kijk naar K(0, 2) en M(0, −4): die liggen op de y-as, en hun <i>eerste</i> getal is 0.">Op de x-as is het eerste getal 0.</button>
+          <button data-ok data-why="Goed! L(−3, 0) en N(4, 0) liggen op de x-as: het tweede getal (de y-coördinaat) is 0. En op de y-as is het eerste getal (de x-coördinaat) 0.">Op de x-as is het tweede getal 0.</button>
+        </div>
+        <p class="feedback" id="fb5"></p>
+        <div class="hints"><div class="hint"><b>Hint</b> Bij (0, 2) ga je 0 hokjes opzij. Waar blijf je dan?</div></div>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g5"></div></div></div>
+    </div>
+
+    <div class="mini">
+      <h3>6 · Tussen de lijnen</h3>
+      <div class="row"><div class="col">
+        <p>Een punt hoeft niet op een kruising te liggen. <span class="todo">Klik op T(2½, 1).</span></p>
+        <p class="feedback" id="fb6a"></p>
+        <p id="m6">Welk punt ligt precies midden tussen (1, 3) en (4, 3)? ( <input class="num" data-ans="2.5"> , <input class="num" data-ans="3"> ) <button class="btn small" id="c6">Controleer</button></p>
+        <p class="feedback" id="fb6b"></p>
+        <p class="small muted">Typ 2½ als <b>2½</b>, <b>2,5</b> of <b>2 1/2</b>.</p>
+        <div class="hints"><div class="hint"><b>Hint 1</b> 2½ ligt precies halverwege 2 en 3.</div><div class="hint"><b>Hint 2</b> Van 1 naar 4 is 3 hokjes. De helft is 1½. Dus 1 + 1½ = …</div></div>
+        <p>Een punt waarvan beide coördinaten gehele getallen zijn, heet een <b>roosterpunt</b>. Is (2½, 3) een roosterpunt?</p>
+        <div class="mc" data-fb="fb6c"><button data-ok data-why="Goed: 2½ is geen geheel getal. Het punt ligt niet op een kruising van roosterlijnen.">Nee</button><button data-why="Kijk naar 2½: is dat een geheel getal?">Ja</button></div>
+        <p class="feedback" id="fb6c"></p>
+      </div><div class="col" style="flex:0 1 360px"><div class="grid-wrap" id="g6"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 4 -->
+<section class="phase step" data-title="Uitleg">
+  <div class="row">
+    <div class="col card">
+      <span class="label">Theorie · lees goed en schrijf over</span>
+      <div class="theory">
+        <ul style="margin:0 0 0 1.1rem;padding:0">
+          <li>De <b>x-as</b> (horizontaal), de <b>y-as</b> (verticaal) en de <b>oorsprong O</b> vormen samen een <b>assenstelsel</b>. O is het snijpunt van de assen.</li>
+          <li>In <b>S(−1, 2)</b> heten −1 en 2 de <b>coördinaten</b>. Het eerste getal is de <b>x-coördinaat</b>, het tweede de <b>y-coördinaat</b>.</li>
+          <li>S(−1, 2) betekent: vanuit O ga je <b>1 naar links en 2 omhoog</b>.</li>
+          <li>Op de x-as is de y-coördinaat 0. Op de y-as is de x-coördinaat 0.</li>
+          <li>Een <b>roosterpunt</b> heeft gehele getallen als coördinaten. T(1½, 2) is geen roosterpunt.</li>
+        </ul>
+      </div>
+      <p class="small"><b>Ezelsbruggetje:</b> de <b>x</b> komt in het alfabet vóór de <b>y</b>. Dus eerst x (opzij), dan y (op of neer).</p>
+      <h3 style="margin-top:1rem">Voorgedaan: het punt (−4, 1) tekenen</h3>
+      <ol id="model" class="steps">
+        <li>“Ik zet mijn potlood op <b>O</b>.”</li>
+        <li>“Het eerste getal is <b>−4</b>. Min betekent links. Ik ga <b>4 hokjes naar links</b>.”</li>
+        <li>“Het tweede getal is <b>1</b>. Plus betekent omhoog. Ik ga <b>1 hokje omhoog</b>.”</li>
+        <li>“Daar zet ik een stip en schrijf ik de naam erbij.”</li>
+      </ol>
+      <button class="btn small" id="modelNext">Volgende denkstap</button>
+      <div class="tip">Zeg de denkstappen hardop als je een punt tekent. Zo maak je minder fouten met de volgorde en de mintekens.</div>
+    </div>
+    <div class="col card">
+      <span class="label green">Werkschema: een assenstelsel tekenen</span>
+      <div id="ws"></div>
+      <p class="todo"><b>Doe nu in je schrift:</b> schrijf de 4 stappen van het werkschema over. Teken daarna een assenstelsel met x en y van −5 tot en met 5. Zet de punten (−4, 1), (3, −2) en (0, −3) erin.</p>
+      <div class="grid-wrap" id="g-model"></div>
+      <button class="btn ghost small solbtn" data-sol="solModel">Vergelijk met mijn tekening</button>
+      <div class="solution" id="solModel">De rode punten in het assenstelsel hierboven zijn de goede plekken. Klopt jouw tekening? Kijk anders nog eens naar de denkstappen.</div>
+      <h3 style="margin-top:1rem">Woorden van vandaag</h3>
+      <p class="small"><span class="pill">assenstelsel</span> <span class="pill">oorsprong O</span> <span class="pill">x-as</span> <span class="pill">y-as</span> <span class="pill">coördinaten</span> <span class="pill">x-coördinaat</span> <span class="pill">y-coördinaat</span> <span class="pill">roosterpunt</span></p>
+      <p class="small">Schrijf elk woord met een korte uitleg of tekeningetje in je schrift.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 5 -->
+<section class="phase step" data-title="Zoek de fouten">
+  <div class="card">
+    <span class="label orange">Zoek de fouten</span>
+    <p>Iemand heeft dit assenstelsel getekend, maar er zitten <b>vier fouten</b> in. Vind ze allemaal: dan maak jij ze straks niet.</p>
+    <div id="fz"></div>
+    <div class="hints"><div class="hint"><b>Hint 1</b> Loop het werkschema na: staan O, x en y erbij?</div><div class="hint"><b>Hint 2</b> Lees de getallen op elke as van links naar rechts en van onder naar boven. Kloppen de volgorde en de stappen?</div><div class="hint"><b>Hint 3</b> Staan de getallen bij de lijnen of in de hokjes?</div></div>
+  </div>
+</section>
+
+<!-- STAP 6 -->
+<section class="phase step" data-title="Oefenen">
+  <div class="row">
+    <div class="col card">
+      <span class="label green">Oefenen · klik het punt</span>
+      <p>Haal <b>5 keer op rij</b> goed. Een fout zet je reeks weer op 0.</p>
+      <p class="huge" id="tgtPt">( , )</p>
+      <div class="grid-wrap" id="g-click"></div>
+      <p class="feedback" id="fbClick"></p>
+      <p class="streak" id="streakClick">○○○○○</p>
+    </div>
+    <div class="col card" id="readBox">
+      <span class="label green">Oefenen · lees af</span>
+      <p>Haal <b>5 keer op rij</b> goed.</p>
+      <div class="grid-wrap" id="g-read"></div>
+      <p>P = ( <input class="num" data-ans="0"> , <input class="num" data-ans="0"> ) <button class="btn small" id="cRead">Controleer</button></p>
+      <p class="feedback" id="fbRead"></p>
+      <p class="streak" id="streakRead">○○○○○</p>
+      <label class="small"><input type="checkbox" id="axRead"> ook punten op een as (moeilijker)</label>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 7 -->
+<section class="phase step" data-title="In je schrift">
+  <div class="row">
+    <div class="col">
+      <div class="schrift">
+        <h3>Teken een assenstelsel in je schrift</h3>
+        <ol>
+          <li>Teken met het werkschema een assenstelsel. Neem de x-as van −6 tot en met 6 en de y-as van −4 tot en met 6.</li>
+          <li>Teken de romp van een boot. Zet de punten erin en verbind ze: <b>A</b>(−5, −1), <b>B</b>(5, −1), <b>C</b>(3, −3), <b>D</b>(−3, −3) en terug naar <b>A</b>.</li>
+          <li>Teken de mast: <b>E</b>(0, −1) en <b>F</b>(0, 5). Verbind E met F.</li>
+          <li>Teken het zeil: verbind <b>F</b>(0, 5), <b>G</b>(4, 0) en <b>H</b>(0, 0).</li>
+          <li>Teken de vlag: verbind <b>F</b>(0, 5), <b>K</b>(−2, 4½) en <b>L</b>(0, 4).</li>
+        </ol>
+        <div class="hints">
+          <div class="hint"><b>Hint 1</b> Je hebt 12 hokjes in de breedte en 10 in de hoogte nodig. Zet O 6 hokjes van links en 4 hokjes van onder.</div>
+          <div class="hint"><b>Hint 2</b> Zet bij elk punt eerst je potlood op O. Bij A: 5 naar links, 1 omlaag.</div>
+          <div class="hint"><b>Hint 3</b> 4½ ligt precies midden tussen 4 en 5: zet K op de helft van een hokje.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h3>Controleer je tekening</h3>
+        <p class="small muted">Vink alleen aan wat écht klopt. Pas dan zie je de voorbeeldtekening.</p>
+        <div id="chk1"></div>
+        <button class="btn ghost small" id="cmpBtn" disabled>Vergelijk met de voorbeeldtekening</button>
+        <div class="reveal" id="cmp" style="margin-top:.6rem"><div class="grid-wrap" id="g-boot" style="max-width:420px"></div></div>
+      </div>
+    </div>
+    <div class="col card" id="q1">
+      <span class="label">Vragen bij je tekening</span>
+      <p><b>a.</b> Welke twee punten liggen op de x-as? <input class="num" style="width:7em" data-letters="GH" placeholder="bijv. B en G"></p>
+      <p><b>b.</b> Welk punt is geen roosterpunt? <input class="num" style="width:7em" data-letters="K" placeholder="letter"></p>
+      <p><b>c.</b> Welke punten hebben dezelfde y-coördinaat als A? <input class="num" style="width:7em" data-letters="BE" placeholder="bijv. B en G"></p>
+      <p><b>d.</b> Het punt midden tussen C en D is ( <input class="num" data-ans="0"> , <input class="num" data-ans="-3"> )</p>
+      <button class="btn" id="cq1">Controleer</button>
+      <p class="feedback" id="fbq1"></p>
+      <div class="hints"><div class="hint"><b>Hint bij a</b> Op de x-as is de y-coördinaat 0.</div><div class="hint"><b>Hint bij b</b> Een roosterpunt heeft twee gehele getallen. Zoek de ½.</div><div class="hint"><b>Hint bij c</b> A heeft y-coördinaat −1. Welke punten nog meer?</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 8 -->
+<section class="phase step" data-title="Opdrachten">
+  <div class="card">
+    <span class="label orange">Opdrachten · werk in je schrift</span>
+    <p>Maak de opdrachten <b>in je schrift</b> en vul daarna hier je antwoorden in. Na twee pogingen zie je de uitwerking: verbeter dan je schrift met een andere kleur.</p>
+    <div class="row">
+      <div class="col" style="border:2px solid #b26b00;border-radius:12px;padding:.6rem 1rem;background:#fffaf0"><h3 style="color:#b26b00">★ Iedereen</h3><p>Opdracht <b>1</b> en <b>2</b>: de belangrijkste opdrachten</p></div>
+      <div class="col" style="border:2px solid var(--brand2);border-radius:12px;padding:.6rem 1rem;"><h3 style="color:var(--brand2)">Basis</h3><p>Opdracht 3, 4 en 5</p></div>
+      <div class="col" style="border:2px solid var(--ok);border-radius:12px;padding:.6rem 1rem;"><h3 style="color:var(--ok)">Plus</h3><p>Opdracht 6 en 7</p></div>
+      <div class="col" style="border:2px dashed var(--accent);border-radius:12px;padding:.6rem 1rem;"><h3 style="color:var(--accent)">Extra</h3><p>Opdracht 8</p></div></div>
+    <p class="small muted" style="margin-top:.6rem">Welke route? Had je bij “Oefenen” twee keer 5 op rij? Maak dan Plus. Anders: Basis. Opdracht 1 en 2 maakt iedereen.</p>
+  </div>
+  <div id="book1"></div>
+</section>
+
+<!-- STAP 9 -->
+<section class="phase step" data-title="Check">
+  <div class="row">
+    <div class="col card" id="exit">
+      <span class="label orange">Check · zonder hints</span>
+      <p><b>1.</b> Lees af: P = ( <input class="num" data-ans="-2"> , <input class="num" data-ans="3"> ) en Q = ( <input class="num" data-ans="4"> , <input class="num" data-ans="-2"> )</p>
+      <div class="grid-wrap" id="g-exit" style="max-width:380px"></div>
+      <p><b>2.</b> 3 hokjes onder (1, 2) ligt ( <input class="num" data-ans="1"> , <input class="num" data-ans="-1"> )</p>
+      <p><b>3.</b> Het punt (5, 0) ligt op de <select data-ans="x"><option value="">kies…</option><option value="x">x-as</option><option value="y">y-as</option><option value="geen">geen van beide</option></select></p>
+      <p><b>4.</b> Is (2, ½) een roosterpunt? <select data-ans="nee"><option value="">kies…</option><option value="ja">ja</option><option value="nee">nee</option></select></p>
+      <button class="btn" id="cExit">Controleer</button>
+      <p class="feedback" id="fbExit"></p>
+    </div>
+    <div class="col card">
+      <span class="label">Klik het punt</span>
+      <p><b>5.</b> Klik op het punt <b>(−3, −1)</b>.</p>
+      <div class="grid-wrap" id="g-exit2" style="max-width:380px"></div>
+      <p class="feedback" id="fbExit2"></p>
+      <div class="card" style="margin-top:1rem;background:#f6f7fb">
+        <b>Wat nu?</b>
+        <p class="small" id="advice">Maak eerst de check. Je krijgt dan advies over wat je nog kunt oefenen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAP 10 -->
+<section class="phase step" data-title="Terugblik">
+  <div class="row">
+    <div class="col card">
+      <span class="label orange">Notities voor je toekomstige ik · in je schrift</span>
+      <ol>
+        <li>Teken een klein assenstelsel met O, x, y en getallen.</li>
+        <li>Zet het punt (−4, 1) erin en teken met pijltjes hoe je er komt.</li>
+        <li>Maak af: <i>“Het eerste getal is de …-coördinaat en zegt … Het tweede getal is de …-coördinaat en zegt …”</i></li>
+        <li>Schrijf één fout op die je vandaag maakte of bijna maakte.</li>
+      </ol>
+      <button class="btn ghost small solbtn" data-sol="solNotes">Vergelijk met een voorbeeld</button>
+      <div class="solution" id="solNotes">Het eerste getal is de <b>x-coördinaat</b> en zegt hoeveel je <b>naar rechts (+) of links (−)</b> gaat. Het tweede getal is de <b>y-coördinaat</b> en zegt hoeveel je <b>omhoog (+) of omlaag (−)</b> gaat. Je begint altijd in O.</div>
+    </div>
+    <div class="col card goal">
+      <span class="label">Terug naar het leerdoel</span>
+      <p class="big">Ik kan een assenstelsel tekenen, en punten tekenen en aflezen.</p>
+      <div class="qbtns" id="self">
+        <button data-msg="Mooi! Wil je meer? Maak opdracht 7 en 8 als je die nog niet gedaan hebt.">Ik kan het</button>
+        <button data-msg="Bijna. Doe stap 6 (Oefenen) nog eens en maak opdracht 2 en 3 opnieuw. Kijk bij twijfel terug naar stap 4.">Bijna</button>
+        <button data-msg="Nog niet. Lees de theorie in stap 4 nog eens, doe stap 6 (Oefenen) opnieuw en maak opdracht 1 en 2 nog een keer. Vraag je docent om hulp.">Nog niet</button>
+      </div>
+      <p class="feedback good" id="selfMsg"></p>
+      <div class="reveal theory" id="finished"><b>Klaar!</b> Volgende keer: figuren in een assenstelsel, roosterpunten tellen en regelmaat.</div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="note">Assenstelsels &amp; coördinaten · zelfstudie · MAVO/HAVO 1. Sluit aan op Getal &amp; Ruimte H3 §3.1; de opdrachten zijn eigen werk, het boek is niet nodig.</footer>
+
+<script>/* ---------- hulpfuncties ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+function fmt(v) {
+  const neg = v < 0, a = Math.abs(v);
+  let s;
+  if (Number.isInteger(a)) s = String(a);
+  else if (Math.abs(a * 2 - Math.round(a * 2)) < 1e-9) s = (Math.floor(a) ? Math.floor(a) : '') + '½';
+  else s = String(Math.round(a * 100) / 100).replace('.', ',');
+  return (neg ? '−' : '') + s;
+}
+function pt(x, y) { return `(${fmt(x)}, ${fmt(y)})`; }
+
+function parseNum(raw) {
+  if (raw == null) return NaN;
+  let s = String(raw).trim().replace(/[−–—]/g, '-').replace(/\s+/g, ' ');
+  if (!s) return NaN;
+  let neg = false;
+  if (s[0] === '-') { neg = true; s = s.slice(1).trim(); }
+  if (!/^[\d.,\/½ ]+$/.test(s)) return NaN;
+  let v, m;
+  if ((m = s.match(/^(\d+)?\s*½$/))) v = (m[1] ? +m[1] : 0) + 0.5;
+  else if ((m = s.match(/^(\d+)\s+(\d+)\/(\d+)$/))) v = +m[1] + (+m[2] / +m[3]);
+  else if ((m = s.match(/^(\d+)\/(\d+)$/))) v = +m[1] / +m[2];
+  else v = parseFloat(s.replace(',', '.'));
+  return neg ? -v : v;
+}
+function normLetters(s) { return [...new Set(String(s || '').replace(/\ben\b/gi, ' ').toUpperCase().match(/[A-Z]/g) || [])].sort().join(''); }
+
+/* ---------- assenstelsel ---------- */
+function drawGrid(container, opts) {
+  const o = Object.assign({
+    xmin: -5, xmax: 5, ymin: -5, ymax: 5, size: 40, numbers: true, axes: true,
+    points: [], segments: [], polygons: [], interactive: false, snap: 1,
+    onPick: null, readout: true, step: 1, markers: []
+  }, opts);
+  const pad = 30;
+  const W = (o.xmax - o.xmin) * o.size, H = (o.ymax - o.ymin) * o.size;
+  const X = x => pad + (x - o.xmin) * o.size, Y = y => pad + (o.ymax - y) * o.size;
+  const has0x = o.xmin <= 0 && o.xmax >= 0, has0y = o.ymin <= 0 && o.ymax >= 0;
+  let s = `<svg class="grid-svg" viewBox="0 0 ${W + 2 * pad} ${H + 2 * pad}" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<defs><marker id="arr${container.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker></defs>`;
+  for (let x = Math.ceil(o.xmin); x <= o.xmax; x++)
+    s += `<line x1="${X(x)}" y1="${Y(o.ymax)}" x2="${X(x)}" y2="${Y(o.ymin)}" stroke="#9ec9ea" stroke-width="1"/>`;
+  for (let y = Math.ceil(o.ymin); y <= o.ymax; y++)
+    s += `<line x1="${X(o.xmin)}" y1="${Y(y)}" x2="${X(o.xmax)}" y2="${Y(y)}" stroke="#9ec9ea" stroke-width="1"/>`;
+  if (o.axes && has0x && has0y) {
+    s += `<line x1="${X(o.xmin) - 8}" y1="${Y(0)}" x2="${X(o.xmax) + 14}" y2="${Y(0)}" stroke="#1d2433" stroke-width="2.2" marker-end="url(#arr${container.id})"/>`;
+    s += `<line x1="${X(0)}" y1="${Y(o.ymin) + 8}" x2="${X(0)}" y2="${Y(o.ymax) - 14}" stroke="#1d2433" stroke-width="2.2" marker-end="url(#arr${container.id})"/>`;
+    if (o.labels !== false) {
+      s += `<text x="${X(o.xmax) + 14}" y="${Y(0) - 8}" font-size="17" font-style="italic" font-family="Georgia,serif">x</text>`;
+      s += `<text x="${X(0) + 8}" y="${Y(o.ymax) - 10}" font-size="17" font-style="italic" font-family="Georgia,serif">y</text>`;
+      s += `<text x="${X(0) - 6}" y="${Y(0) + 18}" text-anchor="end" font-size="15" font-style="italic" font-family="Georgia,serif">O</text>`;
+    }
+    if (o.numbers) {
+      for (let x = Math.ceil(o.xmin); x <= o.xmax; x += o.step) if (x !== 0)
+        s += `<text x="${X(x)}" y="${Y(0) + 18}" text-anchor="middle" font-size="14" fill="#1d2433">${fmt(x)}</text>`;
+      for (let y = Math.ceil(o.ymin); y <= o.ymax; y += o.step) if (y !== 0)
+        s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" text-anchor="end" font-size="14" fill="#1d2433">${fmt(y)}</text>`;
+    }
+  }
+  o.polygons.forEach(p => {
+    s += `<polygon points="${p.pts.map(q => X(q[0]) + ',' + Y(q[1])).join(' ')}" fill="${p.fill || 'rgba(228,87,46,.15)'}" stroke="${p.color || '#e4572e'}" stroke-width="2.5"/>`;
+  });
+  o.segments.forEach(g => {
+    s += `<line x1="${X(g.from[0])}" y1="${Y(g.from[1])}" x2="${X(g.to[0])}" y2="${Y(g.to[1])}" stroke="${g.color || '#e4572e'}" stroke-width="${g.w || 2.5}" ${g.dash ? 'stroke-dasharray="6 5"' : ''} ${g.arrow ? `marker-end="url(#arr${container.id})"` : ''}/>`;
+  });
+  o.markers.forEach(m => {
+    s += `<text x="${X(m.x)}" y="${Y(m.y) + (m.size || 30) * .35}" text-anchor="middle" font-size="${m.size || 30}" font-weight="900" fill="${m.color || '#e4572e'}">${m.t}</text>`;
+  });
+  o.points.forEach(p => {
+    s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.r || 5.5}" fill="${p.color || '#e4572e'}" stroke="#fff" stroke-width="1.5"/>`;
+    if (p.label) {
+      const dx = p.dx ?? 9, dy = p.dy ?? -9;
+      s += `<text x="${X(p.x) + dx}" y="${Y(p.y) + dy}" font-size="17" font-weight="800" font-style="italic" font-family="Georgia,serif" fill="#1d2433" paint-order="stroke" stroke="#fff" stroke-width="4">${p.label}</text>`;
+    }
+  });
+  s += `<g class="userpts"></g><g class="ghost" style="display:none"><circle r="7" fill="none" stroke="#2a7fbf" stroke-width="2.5"/><text font-size="15" font-weight="800" fill="#1f4e8c" paint-order="stroke" stroke="#fff" stroke-width="4"></text></g>`;
+  if (o.interactive) s += `<rect class="hit" x="${X(o.xmin)}" y="${Y(o.ymax)}" width="${W}" height="${H}" fill="transparent" style="cursor:crosshair"/>`;
+  s += `</svg>`;
+  container.innerHTML = s + (o.interactive && o.readout ? `<div class="grid-read" aria-live="polite"></div>` : '');
+  if (!o.interactive) return;
+  const svg = $('svg', container), ghost = $('.ghost', svg), gc = $('circle', ghost), gt = $('text', ghost), read = $('.grid-read', container);
+  const toData = ev => {
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    const sx = (ev.clientX - r.left) * vb.width / r.width, sy = (ev.clientY - r.top) * vb.height / r.height;
+    let x = o.xmin + (sx - pad) / o.size, y = o.ymax - (sy - pad) / o.size;
+    x = Math.round(x / o.snap) * o.snap; y = Math.round(y / o.snap) * o.snap;
+    x = Math.max(o.xmin, Math.min(o.xmax, x)); y = Math.max(o.ymin, Math.min(o.ymax, y));
+    return [x, y];
+  };
+  svg.addEventListener('pointermove', ev => {
+    if (o.noGhost) return;
+    const [x, y] = toData(ev);
+    ghost.style.display = '';
+    gc.setAttribute('cx', X(x)); gc.setAttribute('cy', Y(y));
+    gt.setAttribute('x', X(x) + 10); gt.setAttribute('y', Y(y) - 10); gt.textContent = pt(x, y);
+  });
+  svg.addEventListener('pointerleave', () => ghost.style.display = 'none');
+  svg.addEventListener('click', ev => {
+    const [x, y] = toData(ev);
+    if (o.onPick) { o.onPick(x, y, { svg, X, Y, read, mark: (c) => mark(x, y, c) }); return; }
+    mark(x, y);
+    if (read) read.textContent = 'Je klikte op ' + pt(x, y);
+  });
+  function mark(x, y, color) {
+    const g = $('.userpts', svg);
+    const ns = 'http://www.w3.org/2000/svg';
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('cx', X(x)); c.setAttribute('cy', Y(y)); c.setAttribute('r', 6);
+    c.setAttribute('fill', color || '#2a7fbf'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', 1.5);
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', X(x) + 9); t.setAttribute('y', Y(y) + 20); t.setAttribute('font-size', 14); t.setAttribute('font-weight', 700);
+    t.setAttribute('fill', '#1f4e8c'); t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', '#fff'); t.setAttribute('stroke-width', 4);
+    t.textContent = pt(x, y);
+    g.appendChild(c); g.appendChild(t);
+  }
+}
+
+/* ---------- roosterpunten aanklikken (aan/uit) ---------- */
+function pickGrid(host, base, onChange) {
+  const sel = new Map();
+  const draw = () => drawGrid(host, Object.assign({}, base, {
+    interactive: true, readout: false, noGhost: true,
+    points: (base.points || []).concat([...sel.values()].map(([x, y]) => ({ x, y, color: '#2a7fbf', r: 7 }))),
+    onPick: (x, y) => { const k = x + ',' + y; sel.has(k) ? sel.delete(k) : sel.set(k, [x, y]); draw(); onChange && onChange(sel); }
+  }));
+  draw();
+  host.reset = () => { sel.clear(); draw(); onChange && onChange(sel); };
+  host.sel = sel;
+}
+
+/* ---------- fasen, timer, docentmodus, hints ---------- */
+function initLesson() {
+  const nav = $('nav.phases'), phases = $$('section.phase');
+  let cur = 0;
+  phases.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="min">${p.dataset.min}′</span>${p.dataset.title}`;
+    b.onclick = () => go(i);
+    nav.appendChild(b);
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(phases.length - 1, i));
+    phases.forEach((p, j) => p.classList.toggle('active', j === cur));
+    $$('button', nav).forEach((b, j) => b.classList.toggle('active', j === cur));
+    setTimer(+phases[cur].dataset.min * 60);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (location.hash !== '#fase' + (cur + 1)) history.replaceState(null, '', '#fase' + (cur + 1));
+  }
+  $$('[data-next]').forEach(b => b.onclick = () => go(cur + 1));
+  const tEl = $('.timer .t'), tWrap = $('.timer');
+  let left = 0, iv = null;
+  function show() { const m = Math.floor(left / 60), s = left % 60; tEl.textContent = `${m}:${String(s).padStart(2, '0')}`; tWrap.classList.toggle('done', left === 0); }
+  function setTimer(sec) { left = sec; stop(); show(); }
+  function stop() { clearInterval(iv); iv = null; $('#tplay').textContent = '▶'; }
+  $('#tplay').onclick = () => {
+    if (iv) { stop(); return; }
+    $('#tplay').textContent = '❚❚';
+    iv = setInterval(() => { if (left > 0) { left--; show(); } else stop(); }, 1000);
+  };
+  $('#treset').onclick = () => setTimer(+phases[cur].dataset.min * 60);
+  $('#tplus').onclick = () => { left += 60; show(); };
+  const tb = $('#teacherToggle');
+  tb.onclick = () => {
+    const on = !document.body.classList.contains('teacher');
+    document.body.classList.toggle('teacher', on);
+    tb.setAttribute('aria-pressed', on);
+  };
+  initHints(document);
+  $$('[data-reveal]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.reveal).classList.toggle('show')));
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input,textarea,select')) return;
+    if (e.key === 'PageDown') go(cur + 1);
+    if (e.key === 'PageUp') go(cur - 1);
+  });
+  const h = location.hash.match(/^#fase(\d+)$/);
+  go(h ? +h[1] - 1 : 0);
+}
+
+function initHints(root) {
+  $$('.hints', root).forEach(h => {
+    if (h.dataset.ready) return;
+    h.dataset.ready = 1;
+    const list = $$('.hint', h);
+    if (!list.length) return;
+    const b = document.createElement('button');
+    b.className = 'hintbtn';
+    let n = 0;
+    const label = () => n < list.length ? `💡 Hint ${n + 1} van ${list.length}` : '💡 Alle hints getoond';
+    b.textContent = label();
+    b.onclick = () => { if (n < list.length) { list[n].classList.add('show'); n++; } b.textContent = label(); if (n >= list.length) b.disabled = true; };
+    h.prepend(b);
+  });
+}
+
+/* controle: data-ans="getal", data-letters="letters (volgorde maakt niet uit)", select[data-ans] */
+function checkInputs(scope, fbEl) {
+  let ok = 0, all = 0;
+  $$('input[data-ans]', scope).forEach(i => {
+    all++;
+    const good = Math.abs(parseNum(i.value) - parseFloat(i.dataset.ans)) < 1e-6;
+    i.classList.toggle('good', good); i.classList.toggle('bad', !good);
+    if (good) ok++;
+  });
+  $$('input[data-letters]', scope).forEach(i => {
+    all++;
+    const good = normLetters(i.value) === normLetters(i.dataset.letters);
+    i.classList.toggle('good', good); i.classList.toggle('bad', !good);
+    if (good) ok++;
+  });
+  $$('select[data-ans]', scope).forEach(s => {
+    all++;
+    const good = s.value === s.dataset.ans;
+    s.style.borderColor = good ? 'var(--ok)' : 'var(--accent)';
+    if (good) ok++;
+  });
+  if (fbEl) {
+    fbEl.className = 'feedback ' + (ok === all ? 'good' : 'bad');
+    fbEl.textContent = ok === all ? 'Helemaal goed! ✔' : `${ok} van de ${all} goed. Kijk nog eens naar de rode vakjes en gebruik een hint.`;
+  }
+  return ok === all;
+}
+function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+/* ---------- werkschema stap voor stap ---------- */
+function werkschema(host, opts) {
+  const o = Object.assign({ xmin: -5, xmax: 5, ymin: -4, ymax: 4 }, opts || {});
+  const steps = [
+    'Begin met roosterpapier: hokjes van 1 bij 1 cm. Tel eerst hoeveel hokjes je nodig hebt.',
+    '<b>Stap 1 · Kies de plaats van de oorsprong.</b> Hoeveel hokjes heb je links, rechts, boven en onder nodig? Zet O op een kruising van twee lijnen.',
+    '<b>Stap 2 · Teken de x-as en de y-as</b> met je geodriehoek, door O, met een pijlpunt aan het eind.',
+    '<b>Stap 3 · Zet de letters O, x en y erbij.</b> O linksonder bij de oorsprong, x bij de pijl van de x-as, y bij de pijl van de y-as.',
+    '<b>Stap 4 · Zet er getallen bij.</b> Bij de lijnen (niet in de hokjes) en op gelijke afstanden. Rechts en boven positief, links en onder negatief.'
+  ];
+  host.innerHTML = `<div class="grid-wrap ws-grid"></div><p class="ws-text"></p>
+    <p><button class="btn ghost small ws-prev">← Vorige</button> <button class="btn small ws-next">Volgende stap →</button> <span class="small muted ws-count"></span></p>`;
+  let k = 0;
+  const g = $('.ws-grid', host);
+  function show() {
+    drawGrid(g, Object.assign({}, o, { axes: k >= 2, labels: k >= 3, numbers: k >= 4, points: k === 1 ? [{ x: 0, y: 0, color: '#1f4e8c' }] : [] }));
+    $('.ws-text', host).innerHTML = steps[k];
+    $('.ws-count', host).textContent = `stap ${k} van 4`;
+    $('.ws-prev', host).disabled = k === 0;
+    $('.ws-next', host).disabled = k === 4;
+  }
+  $('.ws-prev', host).onclick = () => { k = Math.max(0, k - 1); show(); };
+  $('.ws-next', host).onclick = () => { k = Math.min(4, k + 1); show(); };
+  show();
+}
+
+/* ---------- afvinklijst ---------- */
+function checklist(host, items, onAll) {
+  host.innerHTML = items.map(t => `<label class="chk"><input type="checkbox"> ${t}</label>`).join('');
+  const boxes = $$('input', host);
+  boxes.forEach(b => b.onchange = () => { b.parentElement.classList.toggle('good', b.checked); if (boxes.every(x => x.checked)) onAll && onAll(); });
+}
+
+/* ---------- hints en antwoorden bij boekopgaven ---------- */
+function bookHints(host, list) {
+  host.innerHTML = list.map(b => `<details style="margin:.4rem 0"><summary><b>Hints bij opgave ${b[0]}</b></summary><div class="hints">${b[1].map((h, k) => `<div class="hint"><b>Hint ${k + 1}</b> ${h}</div>`).join('')}</div><div class="answer">${b[2]}</div></details>`).join('');
+  initHints(host);
+}
+
+/* ---------- leerdoelcheck-knoppen ---------- */
+function ldcButtons(host, msgEl) {
+  $$('button', host).forEach(b => b.onclick = () => { $$('button', host).forEach(x => x.classList.remove('good')); b.classList.add('good'); msgEl.textContent = b.dataset.msg; });
+}
+
+function initSelfStudy(key) {
+  const nav = $('nav.steps'), steps = $$('section.step'), bar = $('.progress>div');
+  let done = new Set();
+  try { done = new Set(JSON.parse(localStorage.getItem(key) || '[]')); } catch (e) {}
+  let cur = 0;
+  steps.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.textContent = (i + 1) + ' ' + s.dataset.title;
+    b.onclick = () => go(i);
+    nav.appendChild(b);
+  });
+  function save() { try { localStorage.setItem(key, JSON.stringify([...done])); } catch (e) {} }
+  function paint() {
+    $$('button', nav).forEach((b, j) => { b.classList.toggle('active', j === cur); b.classList.toggle('done', done.has(j)); });
+    bar.style.width = Math.round(100 * done.size / steps.length) + '%';
+  }
+  function go(i) {
+    cur = Math.max(0, Math.min(steps.length - 1, i));
+    steps.forEach((s, j) => s.classList.toggle('active', j === cur));
+    paint();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { history.replaceState(null, '', '#stap' + (cur + 1)); } catch (e) {}
+  }
+  steps.forEach((s, i) => {
+    const f = document.createElement('div');
+    f.className = 'stepfoot';
+    f.innerHTML = (i > 0 ? '<button class="btn ghost">← Vorige stap</button>' : '<span></span>') +
+      (i < steps.length - 1 ? '<button class="btn">Klaar, volgende stap →</button>' : '<button class="btn">Les afronden ✓</button>');
+    s.appendChild(f);
+    const bs = $$('button', f);
+    if (i > 0) bs[0].onclick = () => go(i - 1);
+    bs[bs.length - 1].onclick = () => { done.add(i); save(); if (i < steps.length - 1) go(i + 1); else { paint(); $('#finished') && $('#finished').classList.add('show'); } };
+  });
+  $('#resetProgress') && ($('#resetProgress').onclick = () => { done.clear(); save(); paint(); });
+  initHints(document);
+  $$('[data-reveal]').forEach(b => b.addEventListener('click', () => document.getElementById(b.dataset.reveal).classList.toggle('show')));
+  initMC(document);
+  initSolutions(document);
+  const h = location.hash.match(/^#stap(\d+)$/);
+  go(h ? +h[1] - 1 : 0);
+}
+/* meerkeuze: <div class="mc" data-fb="id"><button data-ok data-why="...">..</button> */
+function initMC(root) {
+  $$('.mc', root).forEach(mc => {
+    const fb = document.getElementById(mc.dataset.fb);
+    $$('button', mc).forEach(b => b.onclick = () => {
+      $$('button', mc).forEach(x => x.classList.remove('good', 'bad'));
+      const ok = b.hasAttribute('data-ok');
+      b.classList.add(ok ? 'good' : 'bad');
+      if (fb) { fb.className = 'feedback ' + (ok ? 'good' : 'bad'); fb.innerHTML = b.dataset.why || (ok ? 'Goed!' : 'Nog niet. Probeer opnieuw.'); }
+    });
+  });
+}
+/* uitwerking pas zichtbaar na een poging: knop .solbtn met data-sol */
+function initSolutions(root) {
+  $$('.solbtn', root).forEach(b => {
+    const sol = document.getElementById(b.dataset.sol);
+    b.onclick = () => sol.classList.toggle('show');
+  });
+}
+/* klik-opdracht met foutanalyse */
+function clickTask(el, target, opts, fbEl, onOk) {
+  const [tx, ty] = target;
+  drawGrid(el, Object.assign({ xmin: -5, xmax: 5, ymin: -4, ymax: 4, interactive: true, readout: false }, opts, {
+    onPick: (x, y, h) => {
+      if (x === tx && y === ty) {
+        h.mark('#1e8a4c');
+        fbEl.className = 'feedback good';
+        fbEl.textContent = 'Goed! ' + pt(x, y) + ' ✔';
+        onOk && onOk();
+        return;
+      }
+      h.mark('#e4572e');
+      let why = 'Je klikte op ' + pt(x, y) + '. ';
+      if (x === ty && y === tx) why += 'Je hebt de getallen omgedraaid. Eerst het eerste getal: naar links of rechts. Dan pas omhoog of omlaag.';
+      else if (x === -tx && y === ty) why += 'Kijk naar het teken van het eerste getal: min is naar links, plus is naar rechts.';
+      else if (x === tx && y === -ty) why += 'Kijk naar het teken van het tweede getal: min is omlaag, plus is omhoog.';
+      else if (Math.abs(x - tx) === 1 && y === ty || Math.abs(y - ty) === 1 && x === tx) why += 'Bijna! Tel opnieuw vanaf O, en zet je vinger op O voordat je begint.';
+      else why += 'Begin in O. Ga eerst ' + fmt(Math.abs(tx)) + (tx < 0 ? ' naar links' : ' naar rechts') + ', dan ' + fmt(Math.abs(ty)) + (ty < 0 ? ' omlaag.' : ' omhoog.');
+      fbEl.className = 'feedback bad';
+      fbEl.textContent = why;
+    }
+  }));
+}
+/* invul-check met foutanalyse voor één punt: inputs met data-ans */
+function checkPoint(scope, fbEl) {
+  const ins = $$('input[data-ans]', scope);
+  const ok = checkInputs(scope, null);
+  if (ins.length === 2 && !ok) {
+    const a = ins.map(i => parseFloat(i.dataset.ans)), v = ins.map(i => parseNum(i.value));
+    let why = 'Nog niet. ';
+    if (v[0] === a[1] && v[1] === a[0]) why += 'Je hebt de getallen omgedraaid: eerst de x-coördinaat (links/rechts).';
+    else if (v[0] === -a[0] || v[1] === -a[1]) why += 'Let op het minteken: links en omlaag zijn negatief.';
+    else why += 'Begin in O en tel de hokjes opnieuw.';
+    fbEl.className = 'feedback bad'; fbEl.textContent = why;
+  } else if (fbEl) {
+    fbEl.className = 'feedback ' + (ok ? 'good' : 'bad');
+    fbEl.textContent = ok ? 'Goed! ✔' : 'Nog niet: kijk naar de rode vakjes.';
+  }
+  return ok;
+}
+function copyText(btn, text) {
+  btn.onclick = async () => {
+    try { await navigator.clipboard.writeText(text); btn.textContent = 'Gekopieerd ✓'; }
+    catch (e) { btn.textContent = 'Kopiëren lukt niet: selecteer de tekst zelf'; }
+  };
+}
+/* ---------- boekopgaven nakijken in zelfstudie ---------- */
+/* item: {nr, route, star, page, task, hints[], fields:[{label, type:'pt'|'num'|'letters'|'select', ans, options, why}], sol, extra} */
+let BKN = 0;
+function renderBook(host, items) {
+  const P = 'bk' + (BKN++) + '_';
+  const color = { Basis: 'var(--brand2)', Plus: 'var(--ok)', Extra: 'var(--accent)', Iedereen: '#b26b00' };
+  host.innerHTML = items.map((it, i) => `
+    <div class="card bookcard" id="${P}${i}" style="border-top:6px solid ${color[it.route]}${it.star ? ';background:#fffaf0' : ''}">
+      <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <h3 style="margin:0">Opdracht ${it.nr}</h3>
+        <span class="label" style="background:${color[it.route]}">${it.star ? '★ Belangrijk · voor iedereen' : it.route}</span>
+      </div>
+      <div class="row"><div class="col"><p>${it.task}</p></div>${it.fig ? `<div class="col" style="flex:0 1 340px"><div class="grid-wrap bk-fig"></div></div>` : ''}</div>
+      <div class="hints">${it.hints.map((h, k) => `<div class="hint"><b>Hint ${k + 1}</b> ${h}</div>`).join('')}</div>
+      <p class="small muted" style="margin-top:.6rem"><b>Werk in je schrift</b> en vul daarna hier je antwoorden in:</p>
+      ${it.fields.map((f, k) => fieldHTML(f, P + i, k)).join('')}
+      <p><button class="btn small bk-check">Controleer</button> <span class="feedback bk-fb"></span></p>
+      <div class="solution bk-sol">${it.sol}</div>
+      ${it.extra ? `<div class="mini" style="margin-top:1rem;border-top:1px dashed var(--line);padding-top:.8rem"><h3>Extra oefening</h3>${it.extra.html}</div>` : ''}
+    </div>`).join('');
+  items.forEach((it, i) => {
+    const card = $('#' + P + i);
+    let tries = 0;
+    $(':scope > p > .bk-check', card).onclick = () => {
+      tries++;
+      let ok = 0, tips = [];
+      it.fields.forEach((f, k) => {
+        const els = $$(`[data-f="${P}${i}-${k}"]`, card);
+        let good;
+        if (f.type === 'pt') { const v = els.map(e => parseNum(e.value)); good = Math.abs(v[0] - f.ans[0]) < 1e-9 && Math.abs(v[1] - f.ans[1]) < 1e-9; if (!good && v[0] === f.ans[1] && v[1] === f.ans[0]) tips.push('Bij ' + f.label + ' staan de getallen omgedraaid.'); }
+        else if (f.type === 'num') good = Math.abs(parseNum(els[0].value) - f.ans) < 1e-9;
+        else if (f.type === 'letters') { const v = normLetters(els[0].value); good = v === normLetters(f.ans); if (!good && f.why && v) tips.push(f.why); }
+        else good = els[0].value === f.ans;
+        els.forEach(e => { e.classList.toggle('good', good); e.classList.toggle('bad', !good); if (e.tagName === 'SELECT') e.style.borderColor = good ? 'var(--ok)' : 'var(--accent)'; });
+        if (good) ok++;
+      });
+      const fb = $(':scope > p > .bk-fb', card), all = ok === it.fields.length;
+      fb.className = 'feedback bk-fb ' + (all ? 'good' : 'bad');
+      fb.textContent = all ? 'Helemaal goed! ✔' : `${ok} van de ${it.fields.length} goed. ${tips.join(' ')} ${tries < 2 ? 'Probeer het nog een keer of gebruik een hint.' : 'Bekijk de uitwerking en verbeter je schrift.'}`;
+      if (all || tries >= 2) $(':scope > .bk-sol', card).classList.add('show');
+    };
+    if (it.fig) drawGrid($(':scope > .row .bk-fig', card), it.fig);
+    if (it.extra && it.extra.init) it.extra.init(card);
+  });
+  initHints(host);
+}
+function fieldHTML(f, i, k) {
+  const id = `data-f="${i}-${k}"`;
+  if (f.type === 'pt') return `<p>${f.label} ( <input class="num" ${id}> , <input class="num" ${id}> )</p>`;
+  if (f.type === 'num') return `<p>${f.label} <input class="num" ${id}></p>`;
+  if (f.type === 'letters') return `<p>${f.label} <input class="num" style="width:7em" ${id} placeholder="bijv. B en G"></p>`;
+  return `<p>${f.label} <select ${id}><option value="">kies…</option>${f.options.map(o => Array.isArray(o) ? `<option value="${o[0]}">${o[1]}</option>` : `<option>${o}</option>`).join('')}</select></p>`;
+}
+/* roosterpunten aanklikken (stijl A9) */
+function pickLattice(host, o, isTarget, fbEl) {
+  const chosen = new Set();
+  function draw() {
+    drawGrid(host, Object.assign({ interactive: true, readout: false }, o, {
+      points: [...chosen].map(s => { const [x, y] = s.split(',').map(Number); return { x, y, color: '#d0342c' }; }),
+      onPick: (x, y) => { const s = x + ',' + y; chosen.has(s) ? chosen.delete(s) : chosen.add(s); draw(); }
+    }));
+  }
+  draw();
+  return {
+    check() {
+      const want = [];
+      for (let x = Math.ceil(o.xmin); x <= o.xmax; x++) for (let y = Math.ceil(o.ymin); y <= o.ymax; y++) if (isTarget(x, y)) want.push(x + ',' + y);
+      const missing = want.filter(s => !chosen.has(s)).length, extra = [...chosen].filter(s => !want.includes(s)).length;
+      fbEl.className = 'feedback ' + (!missing && !extra ? 'good' : 'bad');
+      fbEl.textContent = !missing && !extra ? `Goed! Het zijn ${want.length} roosterpunten.` : `Je mist er ${missing} en hebt er ${extra} te veel. Let op: bij “tussen” doen de grenzen zelf niet mee.`;
+    },
+    clear() { chosen.clear(); draw(); }
+  };
+}
+/* cirkel-verkenner (stijl A13) */
+function circleExplorer(host, M) {
+  host.innerHTML = `<div class="grid-wrap ce-g" style="max-width:420px"></div>
+    <p>Straal: <input type="range" class="ce-r" min="0.5" max="7" step="0.25" value="1"> <b class="ce-v">1</b></p>
+    <p class="feedback ce-out"></p>`;
+  const g = $('.ce-g', host), r = $('.ce-r', host);
+  function quads(cx, cy, rad) {
+    const q = new Set();
+    for (let t = 0; t < 720; t++) { const a = t * Math.PI / 360, x = cx + rad * Math.cos(a), y = cy + rad * Math.sin(a); if (Math.abs(x) > 1e-9 && Math.abs(y) > 1e-9) q.add(x > 0 ? (y > 0 ? 'I' : 'IV') : (y > 0 ? 'II' : 'III')); }
+    return [...q];
+  }
+  function draw() {
+    const rad = +r.value;
+    drawGrid(g, { xmin: -8, xmax: 8, ymin: -8, ymax: 8, size: 24, quadrants: true, points: [{ x: M[0], y: M[1], label: 'M' }] });
+    const svg = $('svg', g), pad = 30, size = 24;
+    const cx = pad + (M[0] + 8) * size, cy = pad + (8 - M[1]) * size;
+    svg.insertAdjacentHTML('beforeend', `<circle cx="${cx}" cy="${cy}" r="${rad * size}" fill="rgba(42,127,191,.12)" stroke="#1f4e8c" stroke-width="2.5"/>`);
+    $('.ce-v', host).textContent = String(rad).replace('.', ',');
+    const q = quads(M[0], M[1], rad);
+    $('.ce-out', host).textContent = `Met straal ${String(rad).replace('.', ',')} ligt de cirkel in ${q.length} kwadrant${q.length > 1 ? 'en' : ''} (${q.sort().join(', ')}).`;
+  }
+  r.oninput = draw;
+  draw();
+}
+</script>
+<script>
+/* stap 2 */
+
+/* ---------- zoek de fouten in een verkeerd getekend assenstelsel ---------- */
+function foutenZoeker(host) {
+  const size = 34, pad = 26, W = 10 * size, H = 8 * size;
+  const X = x => pad + (x + 5) * size, Y = y => pad + (4 - y) * size;
+  let s = `<svg class="grid-svg" viewBox="0 0 ${W + 2 * pad} ${H + 2 * pad}">`;
+  for (let x = -5; x <= 5; x++) s += `<line x1="${X(x)}" y1="${Y(4)}" x2="${X(x)}" y2="${Y(-4)}" stroke="#9ec9ea"/>`;
+  for (let y = -4; y <= 4; y++) s += `<line x1="${X(-5)}" y1="${Y(y)}" x2="${X(5)}" y2="${Y(y)}" stroke="#9ec9ea"/>`;
+  s += `<defs><marker id="fzm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d2433"/></marker></defs>`;
+  s += `<line x1="${X(-5) - 6}" y1="${Y(0)}" x2="${X(5) + 12}" y2="${Y(0)}" stroke="#1d2433" stroke-width="2.2" marker-end="url(#fzm)"/>`;
+  s += `<line x1="${X(0)}" y1="${Y(-4) + 6}" x2="${X(0)}" y2="${Y(4) - 12}" stroke="#1d2433" stroke-width="2.2" marker-end="url(#fzm)"/>`;
+  s += `<text x="${X(5) + 10}" y="${Y(0) - 8}" font-size="17" font-style="italic" font-family="Georgia,serif">x</text>`;
+  s += `<text x="${X(0) + 8}" y="${Y(4) - 8}" font-size="17" font-style="italic" font-family="Georgia,serif">y</text>`;
+  const xl = [-5, -4, -3, -2, -1, 1, 2, 3, 5];
+  [-5, -4, -3, -2, -1, 0, 1, 2, 3].forEach((c, i) => { s += `<text x="${X(c) + size / 2}" y="${Y(0) + 18}" text-anchor="middle" font-size="13">${fmt(xl[i])}</text>`; });
+  for (let y = -4; y <= 4; y++) if (y) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" text-anchor="end" font-size="13">${fmt(-y)}</text>`;
+  s += `</svg>`;
+  const items = [
+    ['De letter O ontbreekt bij de oorsprong.', true],
+    ['De getallen op de x-as staan in de hokjes in plaats van bij de lijnen.', true],
+    ['Op de y-as staan de negatieve getallen boven.', true],
+    ['Op de x-as ontbreekt een getal: de stappen zijn niet gelijk.', true],
+    ['De assen hebben geen pijlpunten.', false],
+    ['De letters x en y ontbreken.', false]
+  ];
+  host.innerHTML = `<div class="grid-wrap" style="max-width:420px">${s}</div>
+    <p>Vink <b>alle</b> fouten aan die je ziet.</p>
+    <div>${items.map((it, i) => `<label class="chk"><input type="checkbox" data-i="${i}"> ${it[0]}</label>`).join('')}</div>
+    <p><button class="btn small fz-check">Controleer</button></p><p class="feedback fz-fb"></p>`;
+  $('.fz-check', host).onclick = () => {
+    let goed = 0, fout = 0;
+    $$('input', host).forEach(c => {
+      const truth = items[+c.dataset.i][1];
+      c.parentElement.classList.remove('good', 'bad');
+      if (c.checked && truth) { goed++; c.parentElement.classList.add('good'); }
+      if (c.checked && !truth) { fout++; c.parentElement.classList.add('bad'); }
+    });
+    const fb = $('.fz-fb', host);
+    if (goed === 4 && fout === 0) { fb.className = 'feedback fz-fb good'; fb.textContent = 'Alle vier de fouten gevonden! Let in je eigen tekening op precies deze dingen.'; }
+    else { fb.className = 'feedback fz-fb bad'; fb.textContent = `${goed} van de 4 fouten gevonden` + (fout ? `, en ${fout} keer iets aangevinkt dat wel goed is.` : '.') + ' Kijk nog eens naar O, de plek van de getallen en de volgorde op de assen.'; }
+  };
+}
+
+</script>
+<script>/* stap 2 */
+function drawSchat(w) { drawGrid($('#g-schat'), { xmin: -4, xmax: 4, ymin: -4, ymax: 4, axes: w, numbers: w, labels: w,
+  markers: [{ x: 0, y: 0, t: '⛲', size: 26 }, { x: 3, y: 2, t: '🍦', size: 26 }],
+  segments: w ? [{ from: [0, 0], to: [3, 0], color: '#2a7fbf', arrow: true }, { from: [3, 0], to: [3, 2], color: '#2a7fbf', arrow: true }] : [] }); }
+drawSchat(false);
+$('#treasureTxt').addEventListener('input', e => {
+  const ok = e.target.value.trim().length >= 12;
+  $('#treasureMore').classList.toggle('show', ok);
+  $('#treasureLock').style.display = ok ? 'none' : '';
+});
+$('#showDeal').onclick = () => { $('#deal').classList.add('show'); drawSchat(true); $('#schatCap').textContent = 'Met afspraak: begin in O, eerst 3 naar rechts, dan 2 omhoog.'; };
+$('#warmCheck').onclick = () => checkInputs($('#warmCheck').parentElement, $('#warmFb'));
+
+/* stap 3 */
+let s1 = 0;
+drawGrid($('#g1'), { xmin: -1, xmax: 6, ymin: -1, ymax: 5, interactive: true, readout: false, onPick: (x, y, h) => {
+  const tgt = s1 === 0 ? [3, 2] : [1, 4], fb = s1 === 0 ? $('#fb1a') : $('#fb1b');
+  if (s1 > 1) return;
+  if (x === tgt[0] && y === tgt[1]) { h.mark('#1e8a4c'); fb.className = 'feedback good'; fb.textContent = 'Goed! ' + pt(x, y); s1++; }
+  else { h.mark('#e4572e'); fb.className = 'feedback bad'; fb.textContent = (x === tgt[1] && y === tgt[0]) ? 'Je hebt de getallen omgedraaid: eerst naar rechts, dan omhoog.' : 'Nog niet. Begin in O: eerst ' + tgt[0] + ' naar rechts, dan ' + tgt[1] + ' omhoog.'; }
+} });
+drawGrid($('#g2'), { xmin: -1, xmax: 6, ymin: -1, ymax: 6, points: [{ x: 2, y: 4, label: 'A' }, { x: 4, y: 1, label: 'B' }, { x: 1, y: 3, label: 'C' }] });
+$('#c2').onclick = () => checkInputs($('#m2'), $('#fb2'));
+clickTask($('#g3'), [-4, 2], { points: [{ x: -2, y: 1, label: 'restaurant', color: '#6b7280' }] }, $('#fb3a'));
+$('#c3').onclick = () => checkPoint($('#m3'), $('#fb3b'));
+drawGrid($('#g4'), { points: [{ x: -2, y: -1, label: 'E' }, { x: 3, y: -2, label: 'F' }, { x: 1, y: -3, label: 'G' }, { x: -4, y: 2, label: 'H' }] });
+$('#c4').onclick = () => checkInputs($('#m4'), $('#fb4'));
+drawGrid($('#g5'), { points: [{ x: 0, y: 2, label: 'K' }, { x: -3, y: 0, label: 'L', dy: -10 }, { x: 0, y: -4, label: 'M' }, { x: 4, y: 0, label: 'N', dy: -10 }] });
+clickTask($('#g6'), [2.5, 1], { xmin: -1, xmax: 5, ymin: -1, ymax: 4, snap: 0.5 }, $('#fb6a'));
+$('#c6').onclick = () => checkPoint($('#m6'), $('#fb6b'));
+
+/* stap 4 */
+werkschema($('#ws'));
+foutenZoeker($('#fz'));
+$$('#model li').forEach(li => li.style.display = 'none');
+$('#modelNext').onclick = () => { const n = $$('#model li').find(li => li.style.display === 'none'); if (n) n.style.display = ''; if (!$$('#model li').some(li => li.style.display === 'none')) $('#modelNext').disabled = true; };
+drawGrid($('#g-model'), {});
+$('#solModel').previousElementSibling.addEventListener('click', () => drawGrid($('#g-model'), { points: [{ x: -4, y: 1, label: '(−4, 1)' }, { x: 3, y: -2, label: '(3, −2)' }, { x: 0, y: -3, label: '(0, −3)' }] }));
+
+/* stap 6: oefenen */
+let stC = 0, stR = 0;
+const dots = n => '●'.repeat(Math.min(n, 5)) + '○'.repeat(Math.max(0, 5 - n));
+let tgt;
+function newClick() {
+  do { tgt = [rnd(-5, 5), rnd(-4, 4)]; } while (tgt[0] === tgt[1]);
+  $('#tgtPt').textContent = pt(tgt[0], tgt[1]);
+  drawGrid($('#g-click'), { interactive: true, readout: false, onPick: (x, y, h) => {
+    const fb = $('#fbClick');
+    if (x === tgt[0] && y === tgt[1]) { h.mark('#1e8a4c'); stC++; fb.className = 'feedback good'; fb.textContent = stC >= 5 ? 'Vijf op rij! Je beheerst dit. 🎉' : 'Goed!'; $('#streakClick').textContent = dots(stC); setTimeout(newClick, 700); }
+    else {
+      h.mark('#e4572e'); stC = 0; $('#streakClick').textContent = dots(0); fb.className = 'feedback bad';
+      fb.textContent = (x === tgt[1] && y === tgt[0]) ? 'Omgedraaid! Eerst opzij (eerste getal), dan op of neer.' : (x === -tgt[0] && y === tgt[1]) ? 'Let op het teken van het eerste getal: min is links.' : (x === tgt[0] && y === -tgt[1]) ? 'Let op het teken van het tweede getal: min is omlaag.' : 'Nog niet. Begin in O en tel opnieuw.';
+    }
+  } });
+}
+newClick();
+let rp;
+function newRead() {
+  const ax = $('#axRead').checked;
+  do {
+    rp = [rnd(-5, 5), rnd(-4, 3)];
+    if (ax && Math.random() < .4) rp[Math.random() < .5 ? 0 : 1] = 0;
+  } while (rp[0] === rp[1] || (!ax && (rp[0] === 0 || rp[1] === 0)));
+  drawGrid($('#g-read'), { points: [{ x: rp[0], y: rp[1], label: 'P' }] });
+  const ins = $$('#readBox input.num');
+  ins[0].dataset.ans = rp[0]; ins[1].dataset.ans = rp[1];
+  ins.forEach(i => { i.value = ''; i.className = 'num'; });
+}
+$('#axRead').onchange = newRead;
+newRead();
+$('#cRead').onclick = () => {
+  const ok = checkPoint($('#readBox'), $('#fbRead'));
+  stR = ok ? stR + 1 : 0; $('#streakRead').textContent = dots(stR);
+  if (ok) { if (stR >= 5) $('#fbRead').textContent = 'Vijf op rij! 🎉'; setTimeout(newRead, 800); }
+};
+
+/* stap 7: schrift */
+checklist($('#chk1'), [
+  'Ik heb de assen met mijn geodriehoek getekend, met pijlpunten.',
+  'De x-as loopt van −6 tot en met 6, de y-as van −4 tot en met 6.',
+  'O, x en y staan erbij.',
+  'De getallen staan bij de lijnen, op gelijke afstanden.',
+  'Links en onder staan de negatieve getallen.',
+  'Alle punten A t/m L staan erin, met hun letter.'
+], () => $('#cmpBtn').disabled = false);
+$('#cmpBtn').onclick = () => {
+  $('#cmp').classList.add('show');
+  drawGrid($('#g-boot'), { xmin: -6, xmax: 6, ymin: -4, ymax: 6, size: 32,
+    polygons: [
+      { pts: [[-5, -1], [5, -1], [3, -3], [-3, -3]], fill: 'rgba(31,78,140,.12)', color: '#1f4e8c' },
+      { pts: [[0, 5], [4, 0], [0, 0]], fill: 'rgba(228,87,46,.15)' },
+      { pts: [[0, 5], [-2, 4.5], [0, 4]], fill: 'rgba(30,138,76,.2)', color: '#1e8a4c' }],
+    segments: [{ from: [0, -1], to: [0, 5], color: '#1d2433', w: 3 }],
+    points: [['A', -5, -1], ['B', 5, -1], ['C', 3, -3], ['D', -3, -3], ['E', 0, -1], ['F', 0, 5], ['G', 4, 0], ['H', 0, 0], ['K', -2, 4.5], ['L', 0, 4]]
+      .map(p => ({ label: p[0], x: p[1], y: p[2], color: '#1f4e8c' })) });
+};
+$('#cq1').onclick = () => checkInputs($('#q1'), $('#fbq1'));
+
+/* stap 8: opdrachten */
+const P6 = [['A', 2, 5], ['B', -3, 0], ['C', 2, -1], ['D', 0, 4], ['E', -4, -2], ['F', 5, -1]];
+renderBook($('#book1'), [
+  { nr: 1, route: 'Iedereen', star: true,
+    task: 'Lees de coördinaten af in de figuur hiernaast. Schrijf ze in je schrift.',
+    fig: { xmin: -5, xmax: 5, ymin: -4, ymax: 4, size: 30, points: [{ x: -3, y: 1, label: 'A' }, { x: 2, y: 3, label: 'B' }, { x: 0, y: -2, label: 'C' }, { x: 4, y: 0, label: 'D', dy: -10 }, { x: -1, y: -3, label: 'E' }, { x: 3, y: -2, label: 'F' }] },
+    hints: ['Ga vanuit O eerst langs de x-as tot recht boven of onder het punt. Dat is het eerste getal.', 'Een punt op de verticale lijn door O heeft x = 0. Een punt op de horizontale lijn door O heeft y = 0.'],
+    fields: [{ label: 'a. A =', type: 'pt', ans: [-3, 1] }, { label: 'b. B =', type: 'pt', ans: [2, 3] }, { label: 'c. C =', type: 'pt', ans: [0, -2] }, { label: 'd. Bij het punt (4, 0) staat de letter', type: 'letters', ans: 'D' }, { label: 'e. E =', type: 'pt', ans: [-1, -3] }, { label: 'f. F =', type: 'pt', ans: [3, -2] }],
+    sol: 'A(−3, 1), B(2, 3), C(0, −2), D(4, 0), E(−1, −3), F(3, −2).' },
+  { nr: 2, route: 'Iedereen', star: true,
+    task: 'Teken in je schrift een assenstelsel met x en y van −6 tot en met 6. Teken het punt <b>K</b>(1, 2).<br>a. Punt L ligt 3 hokjes rechts van K.<br>b. Punt M ligt 4 hokjes onder K.<br>c. Punt N ligt 5 hokjes links van K.<br>d. Punt P ligt 6 hokjes boven (−3, −5).<br>Teken de punten en schrijf hun coördinaten op.',
+    hints: ['Naar rechts of links: alleen het eerste getal verandert.', 'Naar boven of onder: alleen het tweede getal verandert.', 'Rechts en omhoog: optellen. Links en omlaag: aftrekken.'],
+    fields: [{ label: 'a. L =', type: 'pt', ans: [4, 2] }, { label: 'b. M =', type: 'pt', ans: [1, -2] }, { label: 'c. N =', type: 'pt', ans: [-4, 2] }, { label: 'd. P =', type: 'pt', ans: [-3, 1] }],
+    sol: 'a L(4, 2): 1 + 3 = 4 · b M(1, −2): 2 − 4 = −2 · c N(−4, 2): 1 − 5 = −4 · d P(−3, 1): −5 + 6 = 1' },
+  { nr: 3, route: 'Basis',
+    task: 'Teken in je schrift met het werkschema een assenstelsel met x en y van −5 tot en met 5.<br>a. Teken <b>P</b>(−4, −3), <b>Q</b>(2, −3), <b>R</b>(2, 3) en <b>S</b>(−4, 3) en verbind ze tot vierkant PQRS.<br>b. Teken de diagonalen PR en QS.',
+    hints: ['Je hebt 10 hokjes breed en 10 hoog nodig: zet O in het midden.', 'Een diagonaal verbindt twee hoekpunten die niet naast elkaar liggen: P met R en Q met S.', 'Het snijpunt ligt precies in het midden van het vierkant.'],
+    fields: [{ label: 'Het snijpunt van de diagonalen is', type: 'pt', ans: [-1, 0] }, { label: 'Is dat snijpunt een roosterpunt?', type: 'select', ans: 'ja', options: ['ja', 'nee'] }, { label: 'Het snijpunt ligt op de', type: 'select', ans: 'x', options: [['x', 'x-as'], ['y', 'y-as'], ['geen', 'geen van beide']] }],
+    sol: 'Het snijpunt is (−1, 0): een roosterpunt (beide coördinaten geheel), en het ligt op de x-as, want de y-coördinaat is 0.' },
+  { nr: 4, route: 'Basis',
+    task: 'a. Schrijf in je schrift de coördinaten op van drie punten die op de x-as liggen.<br>b. Schrijf de coördinaten op van drie punten die op de y-as liggen.<br>c. Vul hieronder in.',
+    hints: ['Op de x-as ga je niet omhoog of omlaag. Welk getal is dan 0?', 'Op de y-as ga je niet naar links of rechts.'],
+    fields: [{ label: 'Van alle punten op de x-as is de', type: 'select', ans: 'y', options: [['x', 'x-coördinaat 0'], ['y', 'y-coördinaat 0']] },
+      { label: 'Het punt (0, 6) ligt op de', type: 'select', ans: 'y', options: [['x', 'x-as'], ['y', 'y-as'], ['geen', 'geen van beide']] }, { label: 'Het punt (−7, 0) ligt op de', type: 'select', ans: 'x', options: [['x', 'x-as'], ['y', 'y-as'], ['geen', 'geen van beide']] },
+      { label: 'Het punt (3, −3) ligt op de', type: 'select', ans: 'geen', options: [['x', 'x-as'], ['y', 'y-as'], ['geen', 'geen van beide']] }],
+    sol: 'Bijvoorbeeld x-as: (−3, 0), (1, 0), (4, 0); y-as: (0, −2), (0, 1), (0, 5). Op de x-as is de y-coördinaat 0. (0, 6) ligt op de y-as, (−7, 0) op de x-as, (3, −3) op geen van beide.' },
+  { nr: 5, route: 'Basis',
+    task: 'Beantwoord <b>zonder te tekenen</b>.<br>a. Welk punt ligt 4 hokjes rechts van (6, 2)?<br>b. Welk punt ligt 5 hokjes links van (3, 14)?<br>c. Welk punt ligt 3 hokjes onder (12, 70)?<br>d. Welk punt ligt 20 hokjes rechts en 30 hokjes onder (−15, 10)?',
+    hints: ['Links/rechts verandert alleen het eerste getal; omhoog/omlaag alleen het tweede.', 'b: 3 − 5 = …', 'd: −15 + 20 = … en 10 − 30 = …'],
+    fields: [{ label: 'a.', type: 'pt', ans: [10, 2] }, { label: 'b.', type: 'pt', ans: [-2, 14] }, { label: 'c.', type: 'pt', ans: [12, 67] }, { label: 'd.', type: 'pt', ans: [5, -20] }],
+    sol: 'a (10, 2) · b (−2, 14) · c (12, 67) · d (5, −20)' },
+  { nr: 6, route: 'Plus',
+    task: `Gegeven zijn de punten ${P6.map(p => '<b>' + p[0] + '</b>' + pt(p[1], p[2])).join(', ')}.<br>Beantwoord de vragen <b>zonder de punten te tekenen</b>.`,
+    hints: ['Schrijf de punten onder elkaar in een tabel met een kolom “x” en een kolom “y”.', 'Op de x-as is y = 0; op de y-as is x = 0.', 'e: onder de x-as is y negatief, links van de y-as is x negatief.'],
+    fields: [{ label: 'a. Welke twee punten hebben x-coördinaat 2?', type: 'letters', ans: 'AC' }, { label: 'b. Welke twee punten hebben dezelfde y-coördinaat?', type: 'letters', ans: 'CF' },
+      { label: 'c. Welk punt ligt op de x-as?', type: 'letters', ans: 'B' }, { label: 'd. Welk punt ligt op de y-as?', type: 'letters', ans: 'D' },
+      { label: 'e. Welk punt ligt onder de x-as én links van de y-as?', type: 'letters', ans: 'E' }],
+    sol: 'a A en C · b C en F (y = −1) · c B(−3, 0) · d D(0, 4) · e E(−4, −2)' },
+  { nr: 7, route: 'Plus',
+    task: 'In deze rijen punten zit een regelmaat. Beschrijf de regelmaat in je schrift in eigen woorden en geef het volgende punt.<br>a. (1, 4) (3, 6) (5, 8) (7, 10) …<br>b. (0, 10) (1, 7) (2, 4) (3, 1) …',
+    hints: ['Kijk eerst alleen naar de x-coördinaten: wat komt er steeds bij?', 'Kijk daarna alleen naar de y-coördinaten. Bij b wordt y steeds kleiner.'],
+    fields: [{ label: 'a. Het volgende punt is', type: 'pt', ans: [9, 12] }, { label: 'b. Het volgende punt is', type: 'pt', ans: [4, -2] }],
+    sol: 'a x steeds +2 en y steeds +2: (9, 12) · b x steeds +1 en y steeds −3: (4, −2)' },
+  { nr: 8, route: 'Extra',
+    task: 'Teken in je schrift een assenstelsel met x en y van −4 tot en met 4. Verbind in deze volgorde: (−2, −3), (−2, 3), (2, −3), (2, 3).<br>a. Welke letter heb je getekend?<br>b. De schuine lijn snijdt een van de assen. In welk punt?<br>c. Hoeveel roosterpunten liggen er op de schuine lijn (de eindpunten tellen mee)?',
+    hints: ['Teken het echt: dan zie je de letter meteen.', 'De schuine lijn gaat van (−2, 3) naar (2, −3). Het midden daarvan …', 'Per 2 hokjes opzij ga je 3 hokjes omlaag. Bij welke x kom je precies op een kruising?'],
+    fields: [{ label: 'a. De letter is', type: 'select', ans: 'N', options: ['N', 'M', 'Z', 'W'] }, { label: 'b. Het snijpunt is', type: 'pt', ans: [0, 0] }, { label: 'c. Aantal roosterpunten op de schuine lijn:', type: 'num', ans: 3 }],
+    sol: 'a de letter N · b de oorsprong (0, 0), want dat is het midden van (−2, 3) en (2, −3) · c 3 roosterpunten: (−2, 3), (0, 0) en (2, −3). Bij x = −1 en x = 1 is y = 1½ of −1½.' }
+]);
+
+/* stap 9: check */
+drawGrid($('#g-exit'), { xmin: -5, xmax: 5, ymin: -3, ymax: 4, size: 32, points: [{ x: -2, y: 3, label: 'P' }, { x: 4, y: -2, label: 'Q' }] });
+let exitClick = null;
+drawGrid($('#g-exit2'), { xmin: -5, xmax: 5, ymin: -4, ymax: 3, size: 32, interactive: true, readout: false, onPick: (x, y, h) => {
+  $('#g-exit2').querySelector('.userpts').innerHTML = ''; h.mark('#2a7fbf'); exitClick = [x, y];
+  $('#fbExit2').className = 'feedback'; $('#fbExit2').textContent = 'Jouw keuze: ' + pt(x, y) + '. Klik op Controleer.';
+} });
+$('#cExit').onclick = () => {
+  checkInputs($('#exit'), null);
+  const ins = $$('#exit input[data-ans]');
+  const q1 = ins.slice(0, 4).every(i => i.classList.contains('good')) ? 1 : 0;
+  const q2 = ins.slice(4, 6).every(i => i.classList.contains('good')) ? 1 : 0;
+  const selOk = $$('#exit select[data-ans]').filter(s => s.value === s.dataset.ans).length;
+  const q5 = exitClick && exitClick[0] === -3 && exitClick[1] === -1 ? 1 : 0;
+  const ok = q1 + q2 + selOk + q5;
+  $('#fbExit2').className = 'feedback ' + (q5 ? 'good' : 'bad');
+  $('#fbExit2').textContent = q5 ? 'Vraag 5 goed: 3 naar links, 1 omlaag.' : 'Vraag 5: begin in O, ga 3 naar links en dan 1 omlaag.';
+  $('#fbExit').className = 'feedback ' + (ok === 5 ? 'good' : 'bad');
+  $('#fbExit').textContent = `Je score: ${ok} van de 5.`;
+  $('#advice').innerHTML = ok === 5 ? '<b>Top!</b> Je beheerst het leerdoel. Maak opdracht 7 en 8 als extra uitdaging.' : ok >= 3 ? '<b>Bijna.</b> Kijk bij de rode vakjes wat er misging. Maak opdracht 2 en 3 nog een keer.' : '<b>Nog niet.</b> Ga terug naar stap 4 en 6. Maak daarna opdracht 1 en 2 opnieuw en vraag je docent om hulp.';
+};
+
+/* stap 10 */
+$$('#self button').forEach(b => b.onclick = () => { $$('#self button').forEach(x => x.classList.remove('good')); b.classList.add('good'); $('#selfMsg').textContent = b.dataset.msg; });
+
+initSelfStudy('zelfstudie-mh-assenstelsels-1');
+</script>
+</body></html>
