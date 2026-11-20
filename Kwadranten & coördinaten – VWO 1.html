@@ -134,6 +134,17 @@ nav.steps button.active.done::before{color:#fff}
 ol.steps li{margin:.25rem 0}
 @media print{nav,header,.stepfoot,.hintbtn{display:none!important} section.step{display:block!important}}
 .btn[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+/* altijd donkere tekst in antwoordknoppen en invulvelden, ook in donkere modus */
+:root{color-scheme:light}
+button,select,option,input,textarea{color:#1d2433}
+.mc button,.mc button.good,.mc button.bad,.chk,.qbtns button.good,.qbtns button.bad{color:#1d2433}
+.qbtns button.good,.qbtns button.bad{color:#fff}
+
+/* lichtblauwe invulvakken en keuzelijsten, donkere tekst */
+:root{color-scheme:light}
+input.num,select,textarea{background-color:#e7f1fb;color:#1d2433}
+input.num.good{background-color:#effaf3}input.num.bad{background-color:#fff1ec}
+option{color:#1d2433;background-color:#fff}
 </style></head><body>
 <header class="top">
   <div class="title">Kwadranten &amp; coördinaten <small>VWO 1</small></div>
