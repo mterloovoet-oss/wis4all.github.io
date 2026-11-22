@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.5 Formules met letters (1): rekenen met uitdrukkingen – VWO 1</title>
+<style>:root{--blauw:#1f5fa8;--blauw2:#e8f0fa;--groen:#5c8a2e;--groenbg:#eef4e2;--roze:#d6336c;--oranje:#e8913a;--geel:#fff6d6;--rood:#c92a2a;--ok:#2b8a3e;--tekst:#1d2433;--grijs:#6b7280;--rand:#d7dde6;--fs:17px}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:var(--fs);color:var(--tekst);background:#f4f6fa;line-height:1.5}
+body.bord{--fs:21px}
+header{background:linear-gradient(135deg,#1f5fa8,#2f7fd0);color:#fff;padding:18px 24px 14px}
+.brand{font-size:.8em;opacity:.85;letter-spacing:.04em;text-transform:uppercase}
+header h1{margin:4px 0 6px;font-size:1.7em;font-weight:700}
+.goal{font-size:.95em;opacity:.95}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.tools button{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.pill{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:.9em}
+nav#phases{display:flex;gap:0;background:#fff;border-bottom:1px solid var(--rand);position:sticky;top:0;z-index:5;overflow-x:auto}
+nav#phases button{flex:1;border:0;border-radius:0;background:#fff;padding:12px 10px;font-size:.95em;color:var(--grijs);border-bottom:4px solid transparent;min-width:120px}
+nav#phases button.act{color:var(--blauw);border-bottom-color:var(--blauw);font-weight:700;background:var(--blauw2)}
+nav#phases button.done{color:var(--ok)}
+nav#phases small{display:block;font-weight:400;font-size:.8em}
+#timerbar{display:flex;align-items:center;gap:10px;justify-content:flex-end;max-width:980px;margin:10px auto 0;padding:0 16px;font-size:.9em;color:var(--grijs)}
+#timerbar .t{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.2em;color:var(--tekst);min-width:60px;text-align:right}
+#timerbar .t.op{color:var(--rood);animation:knipper 1s infinite}
+@keyframes knipper{50%{opacity:.3}}
+main{max-width:980px;margin:0 auto;padding:8px 16px 40px}
+section.phase{display:none}section.phase.act{display:block}
+.phase-intro{margin:14px 0 6px;color:var(--grijs);font-size:.95em}
+.card{background:#fff;border:1px solid var(--rand);border-radius:14px;padding:18px 20px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h3{margin:0 0 8px;font-size:1.1em}
+.card.theorie{background:var(--groenbg);border-color:#cfe0b3}
+.card.theorie h3{color:var(--groen)}
+.card.denk{background:var(--geel);border-color:#f1dc94}
+.card.denk h3{color:#9a6b00}
+.card.onthoud{border-left:6px solid var(--blauw);background:var(--blauw2)}
+.card.schrift{border-left:6px solid var(--oranje)}
+.card.q.goed{border-color:#9bd3a8;box-shadow:0 0 0 3px #e3f4e7}
+.label{display:inline-block;font-size:.78em;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;padding:2px 8px;margin-bottom:6px}
+.label.q{background:var(--blauw2);color:var(--blauw)}
+.label.exit{background:#fde2ec;color:var(--roze)}
+.label.plus{background:#fff0e0;color:#b25d00}
+button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--rand);background:#fff;padding:7px 14px}
+button.prim{background:var(--blauw);color:#fff;border-color:var(--blauw)}
+button.hint{background:#fff8e6;border-color:#f0d58a}
+button.uitw{background:#f3f0ff;border-color:#cfc4f5}
+button:disabled{opacity:.5;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+input.f{font:inherit;width:5.2em;padding:5px 7px;border:2px solid var(--rand);border-radius:8px;text-align:center;margin:2px 3px}
+input.f.w{width:8em}
+input.f.goed,select.goed{border-color:var(--ok);background:#ebf7ee}
+input.f.fout,select.fout{border-color:var(--rood);background:#fdecec}
+select{font:inherit;padding:5px;border:2px solid var(--rand);border-radius:8px}
+.fieldrow{margin:6px 0}
+.fb{margin-top:10px;font-weight:600;min-height:1em}
+.fb.goed{color:var(--ok)}.fb.fout{color:var(--rood)}
+.hints .h{background:#fff8e6;border:1px dashed #e9c45d;border-radius:10px;padding:8px 12px;margin-top:8px}
+.uitleg{background:#f5f3ff;border-radius:10px;padding:10px 14px;margin-top:10px;border:1px solid #ddd5fb}
+.mc label{display:block;border:2px solid var(--rand);border-radius:10px;padding:8px 12px;margin:6px 0;cursor:pointer}
+.mc label:hover{background:#f7f9fc}
+.mc input{margin-right:8px}
+.mc label.goed{border-color:var(--ok);background:#ebf7ee}.mc label.fout{border-color:var(--rood);background:#fdecec}
+table.tab{border-collapse:collapse;margin:10px 0;font-size:.95em}
+table.tab td,table.tab th{border:1px solid #9fb4cf;padding:4px 8px;text-align:center;min-width:46px}
+table.tab th,table.tab td:first-child{background:var(--blauw2);font-weight:600;text-align:left}
+table.tab input.f{width:3.8em;margin:0}
+.fig{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:10px 0}
+.fig figure{margin:0;text-align:center}.fig figcaption{font-size:.85em;color:var(--grijs)}
+svg.graph{background:#fff;display:block}
+svg .g-bg{fill:#fff}
+svg .g-grid{stroke:#8ecae6;stroke-width:1}
+svg .g-axis{stroke:#222;stroke-width:1.6}
+svg text{font-family:inherit;font-size:12px;fill:#333}
+svg .g-title{font-size:11px;letter-spacing:.06em;fill:#555;font-weight:600}
+svg .g-axt{font-size:11px;fill:#555}
+svg .g-ax{font-style:italic;font-size:14px}
+svg .pdot{fill:var(--blauw)}
+.plotbox svg{cursor:crosshair}
+.readout{font-size:.9em;color:var(--grijs);margin-top:4px;min-height:1.3em}
+.schrift ul.check{list-style:none;padding:0}.schrift ul.check li{margin:4px 0}
+.steps .st{display:none;padding:4px 0 4px 12px;border-left:3px solid var(--groen);margin:4px 0}
+.steps .st.show{display:block}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.92em;margin:0 2px}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.gegeven{position:sticky;top:52px;z-index:3;background:#1f5fa8;color:#fff;border-radius:10px;padding:8px 14px;font-weight:600;margin:12px 0}
+.niv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.niv div{border-radius:10px;padding:10px;border:1px solid var(--rand)}
+.niv b{display:block;margin-bottom:4px}
+.niv .b{background:#eef7ee}.niv .m{background:#eef3fb}.niv .u{background:#fdf0f5}
+.score{font-size:1.15em}
+footer.nav{display:flex;justify-content:space-between;max-width:980px;margin:0 auto;padding:0 16px 30px}
+.widget{margin-top:8px}
+.widget input[type=range]{width:260px;vertical-align:middle}
+.wrow{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+@media(max-width:700px){.niv{grid-template-columns:1fr}header h1{font-size:1.35em}}
+@media print{nav#phases,#timerbar,footer.nav,.btns,.tools{display:none}section.phase{display:block}}
+a.homelink{color:#fff;text-decoration:none;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:9px;padding:7px 14px}
+a.homelink:hover{background:rgba(255,255,255,.3)}
+footer.nav{align-items:center}a.homefoot{color:var(--blauw);font-weight:600;text-underline-offset:4px}
+@media print{a.homelink,a.homefoot{display:none}}
+</style></head><body>
+<noscript>Deze interactieve les heeft JavaScript nodig.</noscript>
+<script>window.MODE='zelf';window.HOME='../';window.LESSON={"nr": 6, "par": "3.5", "title": "Formules met letters (1): rekenen met uitdrukkingen", "file": "les6_3-5_formules_met_letters_deel1.html", "leerdoelen": [{"doel": "Je kunt rekenen met wiskundige uitdrukkingen.", "theorie": "theorie A van 3.5 en opgave 56", "L": "L8"}], "taak": {"basis": "O49, 50, 51, 57", "midden": "O49, 50, 51, 57", "uitdagend": "O49, 50, 51, 57"}, "phases": [{"name": "Start", "min": 5, "intro": "Activeer je voorkennis. Denk eerst 1 minuut alleen na, bespreek het daarna met je buur.", "blocks": [{"type": "denk", "html": "Een woordformule bij een waterfiets: <b>huurprijs = 15 + 10 · aantal uren<\/b>.<br>Iemand schrijft: <b><i>h<\/i> = 15 + 10<i>u<\/i><\/b>.<br>Wat is het voordeel van deze korte formule? Is er ook een nadeel?", "reveal": "Voordeel: korter en sneller op te schrijven. Nadeel: je moet erbij zeggen waar de letters voor staan (<i>h<\/i> = huurprijs in euro's, <i>u<\/i> = aantal uren)."}, {"type": "q", "kind": "fields", "html": "Voorkennis: reken uit zonder rekenmachine.", "rows": [[{"ans": -12, "pre": "a) 3 · −4 = ", "post": ""}], [{"ans": 10, "pre": "b) −2 · −5 = ", "post": ""}], [{"ans": 10, "pre": "c) 7 − −3 = ", "post": ""}], [{"ans": -3, "pre": "d) −12 : 4 = ", "post": ""}], [{"ans": 12, "pre": "e) 6 + 3 · 2 = ", "post": ""}]], "hints": ["Plus keer min geeft min; min keer min geeft plus.", "Min een negatief getal = plus. En denk bij e) aan de rekenvolgorde."], "uitleg": "a) −12 b) 10 c) 10 d) −3 e) 6 + 6 = 12."}]}, {"name": "Uitleg", "min": 10, "intro": "Lees mee met de uitleg van je docent en probeer de onderdelen zelf uit.", "blocks": [{"type": "theorie", "title": "Theorie A – Formules met letters", "html": "<p>In plaats van woorden gebruik je letters: <b><i>h<\/i> = 15 + 10 · <i>u<\/i><\/b>. Tussen een getal en een letter laat je het keerteken weg: <b>10<i>u<\/i> betekent 10 · <i>u<\/i><\/b>. Dus <i>h<\/i> = 15 + 10<i>u<\/i>.<\/p><p>Ook tussen een getal en een haakje laat je het keerteken weg: <b>3(<i>b<\/i> + 4) betekent 3 · (<i>b<\/i> + 4)<\/b>. Tussen twee getallen mag het keerteken níet weg: 10 · 3 is iets anders dan 103!<\/p><p>10<i>u<\/i> en 3(<i>b<\/i> + 4) heten <b>wiskundige uitdrukkingen<\/b>.<\/p>"}, {"type": "steps", "title": "Voorbeeld: bereken 4 + 3<i>n<\/i> voor <i>n<\/i> = −5", "steps": ["Vervang <i>n<\/i> door −5 en zet het keerteken terug: 4 + 3 · −5", "Eerst keer: 3 · −5 = −15", "4 + −15 = <b>−11<\/b>"], "html": ""}, {"type": "steps", "title": "Voorbeeld: bereken 10 − 2(3 − <i>k<\/i>) voor <i>k<\/i> = 7", "steps": ["Invullen: 10 − 2 · (3 − 7)", "Eerst haakjes: 3 − 7 = −4, dus 10 − 2 · −4", "Dan keer: 2 · −4 = −8, dus 10 − −8", "10 − −8 = 10 + 8 = <b>18<\/b>"], "html": ""}, {"type": "onthoud", "html": "Rekenvolgorde: 1. haakjes, 2. keer en delen, 3. plus en min.<br>Schrijf bij het invullen het keerteken weer op, en reken stap voor stap onder elkaar."}]}, {"name": "Oefenen", "min": 22, "intro": "Werk de opdrachten in volgorde af. Vastgelopen? Gebruik eerst een hint, daarna pas de uitwerking. Houd je schrift erbij voor tussenstappen.", "blocks": [{"type": "gegeven", "html": "Gegeven bij opdracht 1 t/m 3: &nbsp; <i>a<\/i> = 4, &nbsp; <i>b<\/i> = −2, &nbsp; <i>c<\/i> = −5"}, {"type": "q", "kind": "fields", "html": "Bereken.", "rows": [[{"ans": 13, "pre": "a) <i>a<\/i> + 9 = ", "post": ""}], [{"ans": 11, "pre": "b) 7 − 2<i>b<\/i> = ", "post": ""}], [{"ans": -25, "pre": "c) 5<i>c<\/i> = ", "post": ""}], [{"ans": -6, "pre": "d) 3(<i>a<\/i> − 6) = ", "post": ""}]], "hints": ["b) 7 − 2 · −2. Eerst keer: 2 · −2 = −4.", "d) Eerst haakjes: 4 − 6 = −2. Dan 3 · −2."], "uitleg": "a) 13 b) 7 − −4 = 11 c) 5 · −5 = −25 d) 3 · −2 = −6"}, {"type": "q", "kind": "fields", "html": "Bereken.", "rows": [[{"ans": -7, "pre": "a) 2 + 3(<i>b<\/i> − 1) = ", "post": ""}], [{"ans": -3, "pre": "b) <i>c<\/i> − <i>b<\/i> = ", "post": ""}], [{"ans": -3, "pre": "c) <span class=\"frac\"><span><i>a<\/i> + 2<\/span><span><i>b<\/i><\/span><\/span> = ", "post": ""}], [{"ans": -2, "pre": "d) <span class=\"frac\"><span><i>a<\/i> − 10<\/span><span><i>b<\/i> + 5<\/span><\/span> = ", "post": ""}]], "hints": ["a) Haakjes: −2 − 1 = −3. Dan 3 · −3 = −9. Dan 2 + −9.", "Bij een breuk reken je eerst de teller en de noemer uit, daarna deel je. d) (4 − 10) : (−2 + 5)."], "uitleg": "a) 2 − 9 = −7 b) −5 − −2 = −3 c) 6 : −2 = −3 d) −6 : 3 = −2"}, {"type": "q", "kind": "mc", "html": "Tom berekent 4 − 2<i>b<\/i> voor <i>b<\/i> = −3 zo: &nbsp; 4 − 2 · −3 = 2 · −3 = −6. Wat gaat er fout?", "options": ["Hij rekent eerst 4 − 2 uit, maar keer gaat vóór min.", "Hij had −3 niet mogen invullen.", "Er gaat niets fout."], "correct": 0, "hints": ["Denk aan de rekenvolgorde."], "uitleg": "Eerst 2 · −3 = −6, dan 4 − −6 = 10."}, {"type": "q", "kind": "fields", "html": "Wat is het goede antwoord van Tom?", "fields": [{"ans": 10, "pre": "4 − 2<i>b<\/i> = ", "post": ""}], "hints": ["4 − −6"], "uitleg": "4 − (−6) = 4 + 6 = 10."}, {"type": "gegeven", "html": "Gegeven bij opdracht 5: &nbsp; <i>p<\/i> = −1 &nbsp; en &nbsp; <i>q<\/i> = 4"}, {"type": "q", "kind": "fields", "html": "Bereken.", "rows": [[{"ans": -11, "pre": "a) 3<i>p<\/i> − 2<i>q<\/i> = ", "post": ""}], [{"ans": 2, "pre": "b) <i>p<\/i>(<i>q<\/i> − 6) = ", "post": ""}], [{"ans": 9, "pre": "c) <i>q<\/i> − 5<i>p<\/i> = ", "post": ""}]], "hints": ["Tussen een letter en een haakje staat ook een keerteken: <i>p<\/i>(<i>q<\/i> − 6) = <i>p<\/i> · (<i>q<\/i> − 6).", "c) 4 − 5 · −1 = 4 − −5."], "uitleg": "a) −3 − 8 = −11 b) −1 · −2 = 2 c) 4 + 5 = 9"}, {"type": "q", "kind": "mc", "html": "Bij welke uitdrukking mag het keerteken <b>niet<\/b> weg?", "options": ["5 · <i>x<\/i>", "3 · (<i>b<\/i> + 4)", "10 · 3", "<i>a<\/i> · <i>b<\/i>"], "correct": 2, "hints": ["Wat zou er gebeuren als je bij twee getallen het keerteken weglaat?"], "uitleg": "10 · 3 zonder keerteken wordt 103. Dat is een ander getal!"}, {"type": "q", "kind": "fields", "html": "Voor welke waarde van <i>n<\/i> is 3 + 5<i>n<\/i> gelijk aan −17?", "plus": true, "fields": [{"ans": -4, "pre": "<i>n<\/i> = ", "post": ""}], "hints": ["Terugrekenen: eerst de 3 eraf.", "−17 − 3 = −20. Dan −20 : 5."], "uitleg": "−20 : 5 = −4. Controle: 3 + 5 · −4 = 3 − 20 = −17 ✔"}]}, {"name": "Afsluiten", "min": 8, "intro": "Laat zien wat je geleerd hebt en kijk wat je nog moet doen.", "blocks": [{"type": "q", "kind": "fields", "html": "Neem <i>x<\/i> = −3 en bereken.", "exit": true, "rows": [[{"ans": 1, "pre": "a) 2<i>x<\/i> + 7 = ", "post": ""}], [{"ans": 10, "pre": "b) 4 − 3(<i>x<\/i> + 1) = ", "post": ""}]], "hints": ["a) 2 · −3 + 7", "b) Haakjes: −3 + 1 = −2. Dan 4 − 3 · −2."], "uitleg": "a) −6 + 7 = 1 b) 4 − −6 = 10"}, {"type": "check"}, {"type": "score"}, {"type": "taak"}]}]};</script>
+<script>(function(){
+"use strict";
+const L = window.LESSON;
+const ZELF = window.MODE==='zelf';
+const HOME = window.HOME||'./';
+const KEY = 'wis4all-zelf-'+(L.file||L.title);
+const ZI=[{name:'Opfrissen',intro:'Haal eerst op wat je al weet. Denk even na en schrijf je idee op (hier of in je schrift) voordat je het antwoord bekijkt.'},
+ {name:'Uitleg',intro:'Lees de uitleg rustig door. Klik op "Volgende stap" en probeer de onderdelen zelf uit. Schrijf het kader "Onthoud" over in je schrift.'},
+ {name:'Oefenen',intro:'Maak de opdrachten in volgorde en schrijf tussenstappen in je schrift. Kom je er niet uit? Neem eerst een hint. Lukt het na twee pogingen niet, bekijk dan de uitwerking en zoek uit waarom het zo is. Probeer het daarna opnieuw.'},
+ {name:'Afronden',intro:'Test jezelf met de laatste vragen, lees de samenvatting en kijk welk maakwerk je nog moet doen.'}];
+if(ZELF){L.phases.forEach((p,i)=>{if(ZI[i]){p.name=ZI[i].name;p.intro=ZI[i].intro;}});
+  const last=L.phases[L.phases.length-1].blocks,ci=last.findIndex(b=>b.type==='check');last.splice(ci,0,{type:'samenvatting'});}
+const S = {phase:0, qs:[], correct:new Set(), timer:{left:0,run:false,id:null}};
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = v => { const r=Math.round(v*1000)/1000; return (r<0?'−':'')+String(Math.abs(r)).replace('.',','); };
+
+/* ---------- getallen inlezen ---------- */
+function parseNum(raw){
+  let s=String(raw).trim().replace(/[−–]/g,'-').replace(/½/g,' 1/2');
+  s=s.replace(/€|%|°|[a-zA-Z]+/g,' ').replace(/\/(?!\s*-?\d)/g,' ').trim().replace(/\s+/g,' ').replace(/,/g,'.');
+  let m=s.match(/^(-?)(\d+) (\d+)\/(\d+)$/); if(m){const v=+m[2]+(+m[3])/(+m[4]); return m[1]?-v:v;}
+  m=s.match(/^(-?\d+(?:\.\d+)?) ?\/ ?(-?\d+(?:\.\d+)?)$/); if(m) return (+m[1])/(+m[2]);
+  s=s.replace(/ /g,'');
+  if(s===''||s==='-'||s==='.'||isNaN(+s)) return NaN; return +s;
+}
+const norm = s=>String(s).toLowerCase().replace(/[−–]/g,'-').replace(/\s+/g,'').replace(/,/g,'.');
+function okVal(val,f){
+  if(String(val).trim()==='') return false;
+  const acc = Array.isArray(f.ans)?f.ans:[f.ans];
+  return acc.some(a=> typeof a==='number' ? (()=>{const v=parseNum(val);return !isNaN(v)&&Math.abs(v-a)<=(f.tol||1e-9)})() : norm(val)===norm(a));
+}
+
+/* ---------- grafieken ---------- */
+function steps(a,b,s){const r=[],n=Math.round((b-a)/s);for(let i=0;i<=n;i++)r.push(+(a+i*s).toFixed(6));return r;}
+function pathD(pts,X,Y,smooth){
+  const P=pts.map(p=>[+X(p[0]).toFixed(2),+Y(p[1]).toFixed(2)]);
+  if(!smooth||P.length<3) return 'M'+P.map(p=>p.join(',')).join(' L');
+  let d='M'+P[0];
+  for(let i=0;i<P.length-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;
+    const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+=' C'+c1.map(v=>v.toFixed(2))+' '+c2.map(v=>v.toFixed(2))+' '+p2;}
+  return d;
+}
+function graph(sp){
+  const W=sp.w||480,H=sp.h||320;
+  const m={l:sp.ml!=null?sp.ml:(sp.noNumbers?18:46),r:sp.mr!=null?sp.mr:22,t:sp.title?44:18,b:sp.mb!=null?sp.mb:(sp.noNumbers?26:40)};
+  const X=x=>m.l+(x-sp.xmin)/(sp.xmax-sp.xmin)*(W-m.l-m.r);
+  const Y=y=>H-m.b-(y-sp.ymin)/(sp.ymax-sp.ymin)*(H-m.t-m.b);
+  let o=`<svg class="graph" viewBox="0 0 ${W} ${H}" width="${W}" style="max-width:100%;height:auto" xmlns="http://www.w3.org/2000/svg">`;
+  if(sp.title) o+=`<text x="${m.l}" y="14" class="g-title">${esc(sp.title)}</text>`;
+  o+=`<rect x="${X(sp.xmin)}" y="${Y(sp.ymax)}" width="${X(sp.xmax)-X(sp.xmin)}" height="${Y(sp.ymin)-Y(sp.ymax)}" class="g-bg"/>`;
+  if(!sp.noGrid){
+    steps(sp.xmin,sp.xmax,sp.xgrid).forEach(x=>o+=`<line x1="${X(x)}" y1="${Y(sp.ymin)}" x2="${X(x)}" y2="${Y(sp.ymax)}" class="g-grid"/>`);
+    steps(sp.ymin,sp.ymax,sp.ygrid).forEach(y=>o+=`<line x1="${X(sp.xmin)}" y1="${Y(y)}" x2="${X(sp.xmax)}" y2="${Y(y)}" class="g-grid"/>`);
+  }
+  (sp.polys||[]).forEach(p=>o+=`<polygon points="${p.pts.map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${p.fill||'#f7b6c8'}" stroke="${p.stroke||'#c2255c'}" stroke-width="1.5" fill-opacity="${p.op||0.8}"/>`);
+  const ax=(sp.xmin<=0&&sp.xmax>=0)?0:sp.xmin, ay=(sp.ymin<=0&&sp.ymax>=0)?0:sp.ymin;
+  o+=`<line x1="${X(sp.xmin)}" y1="${Y(ay)}" x2="${X(sp.xmax)+8}" y2="${Y(ay)}" class="g-axis"/>`;
+  o+=`<line x1="${X(ax)}" y1="${Y(sp.ymin)}" x2="${X(ax)}" y2="${Y(sp.ymax)-8}" class="g-axis"/>`;
+  if(!sp.noNumbers){
+    steps(sp.xmin,sp.xmax,sp.xlab||sp.xgrid).forEach(x=>{ if(x===ax&&(ax===0||sp.scheur)) return;
+      o+=`<text x="${X(x)}" y="${Y(ay)+16}" text-anchor="middle">${fmt(x)}</text>`;});
+    steps(sp.ymin,sp.ymax,sp.ylab||sp.ygrid).forEach(y=>{ if(y===ay&&(ay===0||sp.scheur)) return;
+      o+=`<text x="${X(ax)-6}" y="${Y(y)+4}" text-anchor="end">${fmt(y)}</text>`;});
+    if((ax===0&&ay===0)||sp.scheur) o+=`<text x="${X(ax)-6}" y="${Y(ay)+15}" text-anchor="end" font-style="italic">O</text>`;
+  }
+  if(sp.scheur){const x0=X(ax),y0=Y(ay)-6;o+=`<rect x="${x0-6}" y="${y0-16}" width="12" height="18" fill="#fff"/><path d="M${x0},${y0+6} L${x0},${y0} L${x0-5},${y0-3} L${x0+5},${y0-7} L${x0-5},${y0-11} L${x0},${y0-14} L${x0},${y0-18}" class="g-axis" fill="none"/>`;}
+  if(sp.xname) o+=`<text x="${X(sp.xmax)+10}" y="${Y(ay)+4}" class="g-ax">${esc(sp.xname)}</text>`;
+  if(sp.yname) o+=`<text x="${X(ax)+6}" y="${Y(sp.ymax)-4}" class="g-ax">${esc(sp.yname)}</text>`;
+  if(sp.xtitle) o+=`<text x="${X(sp.xmax)}" y="${H-4}" text-anchor="end" class="g-axt">${esc(sp.xtitle)}</text>`;
+  if(sp.ytitle) o+=`<text x="${Math.max(2,X(ax)-30)}" y="${m.t-6}" class="g-axt">${esc(sp.ytitle)}</text>`;
+  (sp.series||[]).forEach(s=>{o+=`<path d="${pathD(s.pts,X,Y,s.smooth)}" fill="none" stroke="${s.color||'#d6336c'}" stroke-width="${s.w||2.6}" ${s.dash?'stroke-dasharray="6 5"':''} stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(s.label){const p=s.labelAt||s.pts[s.pts.length-1];o+=`<text x="${X(p[0])+4}" y="${Y(p[1])-6}" fill="${s.color||'#d6336c'}" style="fill:${s.color||'#d6336c'};font-weight:600">${esc(s.label)}</text>`;}});
+  (sp.texts||[]).forEach(t=>o+=`<text x="${X(t.x)+(t.dx||0)}" y="${Y(t.y)+(t.dy||0)}" text-anchor="${t.anchor||'middle'}" style="${t.style||'font-weight:700;font-style:italic;font-size:14px'}">${esc(t.t)}</text>`);
+  (sp.dots||[]).forEach(d=>{o+=`<circle cx="${X(d.x)}" cy="${Y(d.y)}" r="${d.r||5}" class="${d.cls||''}" ${d.color?`fill="${d.color}"`:''}/>`;
+    if(d.label)o+=`<text x="${X(d.x)+7}" y="${Y(d.y)-7}" style="font-weight:700">${esc(d.label)}</text>`;});
+  if(sp.vline!=null) o+=`<line x1="${X(sp.vline)}" y1="${Y(sp.ymin)}" x2="${X(sp.vline)}" y2="${Y(sp.ymax)}" stroke="#1f5fa8" stroke-dasharray="5 4" stroke-width="2"/>`;
+  if(sp.hline!=null) o+=`<line x1="${X(sp.xmin)}" y1="${Y(sp.hline)}" x2="${X(sp.xmax)}" y2="${Y(sp.hline)}" stroke="#1f5fa8" stroke-dasharray="5 4" stroke-width="2"/>`;
+  o+='</svg>';
+  return {svg:o,X,Y,W,H,m};
+}
+function figHTML(fig){
+  if(!fig) return '';
+  if(fig.html) return `<div class="fig">${fig.html}</div>`;
+  const arr=Array.isArray(fig)?fig:[fig];
+  return '<div class="fig">'+arr.map(g=>`<figure>${graph(g).svg}${g.caption?`<figcaption>${g.caption}</figcaption>`:''}</figure>`).join('')+'</div>';
+}
+
+/* ---------- blokken ---------- */
+let qnr=0;
+function hintsHTML(q){
+  if(!q.hints||!q.hints.length) return '';
+  return `<button class="hint" data-a="hint">💡 Hint (1/${q.hints.length})</button>`;
+}
+function blockHTML(b){
+  switch(b.type){
+    case 'text': return `<div class="card">${b.title?`<h3>${b.title}</h3>`:''}${b.html}${figHTML(b.fig)}</div>`;
+    case 'theorie': return `<div class="card theorie"><h3>📗 ${b.title}</h3>${b.html}${figHTML(b.fig)}</div>`;
+    case 'onthoud': return `<div class="card onthoud"><h3>⭐ ${b.title||'Onthoud'}</h3>${b.html}</div>`;
+    case 'gegeven': return `<div class="gegeven">${b.html}</div>`;
+    case 'denk': return `<div class="card denk"><h3>🤔 ${b.title||'Denkopdracht'}</h3>${b.html}${figHTML(b.fig)}
+      <textarea rows="3" style="width:100%;font:inherit;border-radius:8px;border:1px solid #e3cf8a;padding:8px;margin-top:8px" placeholder="Schrijf hier (of in je schrift) jouw idee…"></textarea>
+      <div class="btns"><button class="prim" data-a="reveal">${ZELF?'✅ Klaar? Vergelijk met een mogelijk antwoord':'👀 Bespreek: toon mogelijke antwoorden'}</button></div><div class="uitleg" hidden>${b.reveal}</div></div>`;
+    case 'steps': return `<div class="card theorie steps"><h3>📗 ${b.title}</h3>${b.html||''}${b.steps.map(s=>`<div class="st">${s}</div>`).join('')}
+      <div class="btns"><button class="prim" data-a="step">Volgende stap ▶</button></div></div>`;
+    case 'widget': return `<div class="card"><h3>🧪 ${b.title}</h3>${b.html||''}<div class="widget" data-w="${b.name}"></div></div>`;
+    case 'schrift': return `<div class="card schrift"><span class="label plus">✏️ In je schrift</span><h3>${b.title}</h3>${b.html}
+      <ul class="check">${(b.check||[]).map(c=>`<li><label><input type="checkbox"> ${c}</label></li>`).join('')}</ul>
+      <div class="btns"><button class="uitw" data-a="reveal">Vergelijk met de uitwerking</button></div><div class="uitleg" hidden>${b.reveal||''}${figHTML(b.revealFig)}</div></div>`;
+    case 'check': return `<div class="card"><h3>✅ Leerdoelencheck</h3>${L.leerdoelen.map((d,i)=>`<div style="margin:8px 0"><b>${d.doel}</b><div class="btns">
+      <button data-a="lc" data-i="${i}" data-v="ja">👍 Ja, dat kan ik</button><button data-a="lc" data-i="${i}" data-v="nee">🤏 Nog niet</button></div><div class="uitleg" hidden></div></div>`).join('')}</div>`;
+    case 'taak': {const t=L.taak; return `<div class="card"><h3>📚 Maakwerk uit het boek (taakwijzer)</h3>
+      <p>${ZELF?'Maak de opgaven van jouw niveau. Weet je niet welk niveau? Vraag het je docent of begin bij basis.':'Kies je niveau (overleg met je docent).'} Opgaven met een <b>O</b> zijn oriëntatieopgaven; die heb je in deze les al grotendeels geoefend.</p>
+      <div class="niv"><div class="b"><b>Basis</b>${t.basis}</div><div class="m"><b>Midden</b>${t.midden}</div><div class="u"><b>Uitdagend</b>${t.uitdagend}</div></div></div>`;}
+    case 'samenvatting': {const parts=allBlocks().filter(x=>x.type==='onthoud'||x.type==='steps');
+      return `<div class="card onthoud"><h3>📝 Samenvatting van deze les</h3>${parts.map(x=>`<h4 style="margin:12px 0 4px">${x.title||'Onthoud'}</h4>${x.type==='steps'?x.steps.map(t=>`<div>${t}</div>`).join(''):x.html}`).join('')}<p style="margin-top:12px"><i>Tip: schrijf deze samenvatting in je schrift.</i></p></div>`;}
+    case 'score': return `<div class="card"><h3>🏁 Jouw resultaat</h3><p class="score" data-score></p><p>Opdrachten die nog niet goed zijn, staan hieronder. Klik om ernaartoe te gaan.</p><div data-open></div></div>`;
+    case 'q': return qHTML(b);
+  }
+  return '';
+}
+function qHTML(q){
+  qnr++; q.nr=qnr; S.qs.push(q);
+  const lab=q.exit?`<span class="label exit">${ZELF?'Toets jezelf':'Exit-ticket'}</span>`:`<span class="label ${q.plus?'plus':'q'}">Opdracht ${qnr}${q.plus?' · uitdaging':''}</span>`;
+  let body='';
+  if(q.kind==='fields'){
+    body=(q.rows||[q.fields]).map(r=>`<div class="fieldrow">${r.map(f=>`${f.pre||''}<input class="f${f.w?' w':''}" inputmode="${typeof (Array.isArray(f.ans)?f.ans[0]:f.ans)==='number'?'decimal':'text'}" aria-label="antwoord">${f.post||''}`).join(' ')}</div>`).join('');
+  } else if(q.kind==='mc'){
+    body=`<div class="mc">${q.options.map((o,i)=>`<label><input type="radio" name="mc${qnr}" value="${i}">${o}</label>`).join('')}</div>`;
+  } else if(q.kind==='table'){
+    body=`<table class="tab">${q.table.map((row,ri)=>`<tr>${row.map((c,ci)=>{const tag=(ri===0&&q.head!==false)||ci===0?'th':'td'; return (c!==null&&typeof c==='object')?`<td><input class="f" inputmode="decimal"></td>`:`<${tag}>${c}</${tag}>`;}).join('')}</tr>`).join('')}</table>`;
+  } else if(q.kind==='select'){
+    body=q.items.map(it=>`<div class="fieldrow">${it.label} <select><option value="">— kies —</option>${(it.options||q.options).map(o=>`<option>${o}</option>`).join('')}</select></div>`).join('');
+  } else if(q.kind==='plot'){
+    body=`<div class="plotbox"></div><div class="readout">Klik op een roosterpunt om een punt te zetten. Klik nog eens om het weg te halen.</div>`;
+  }
+  return `<div class="card q" id="q${qnr}" data-q="${qnr}">${lab}${q.title?`<h3>${q.title}</h3>`:''}<div>${q.html||''}</div>${q.kind!=='plot'?figHTML(q.fig):''}${body}
+   <div class="btns"><button class="prim" data-a="check">✔ Controleer</button>${hintsHTML(q)}<button class="uitw" data-a="uitw" hidden>📖 Toon uitwerking</button></div>
+   <div class="fb"></div><div class="hints"></div><div class="uitleg" hidden>${q.uitleg||''}</div></div>`;
+}
+
+/* ---------- controleren ---------- */
+function checkQ(card,q){
+  q.tries=(q.tries||0)+1; let ok=false, msg='';
+  if(q.kind==='fields'){
+    const fs=(q.rows||[q.fields]).flat(), ins=card.querySelectorAll('input.f'); let n=0;
+    ins.forEach((inp,i)=>{const g=okVal(inp.value,fs[i]); inp.classList.toggle('goed',g); inp.classList.toggle('fout',!g); if(g)n++;});
+    ok=n===fs.length; if(!ok&&fs.length>1) msg=`${n} van de ${fs.length} vakjes goed.`;
+  } else if(q.kind==='mc'){
+    const sel=card.querySelector('input[type=radio]:checked'); card.querySelectorAll('.mc label').forEach(l=>l.classList.remove('goed','fout'));
+    if(!sel){feedback(card,'Kies eerst een antwoord.',false);q.tries--;return;}
+    ok=+sel.value===q.correct; sel.parentElement.classList.add(ok?'goed':'fout');
+    if(!ok&&q.why&&q.why[+sel.value]) msg=q.why[+sel.value];
+  } else if(q.kind==='table'){
+    const cells=[];q.table.forEach(r=>r.forEach(c=>{if(c!==null&&typeof c==='object')cells.push(c);}));
+    const ins=card.querySelectorAll('table input.f');let n=0;
+    ins.forEach((inp,i)=>{const g=okVal(inp.value,cells[i]);inp.classList.toggle('goed',g);inp.classList.toggle('fout',!g);if(g)n++;});
+    ok=n===cells.length; if(!ok) msg=`${n} van de ${cells.length} vakjes goed.`;
+  } else if(q.kind==='select'){
+    const ss=card.querySelectorAll('select');let n=0;
+    ss.forEach((s,i)=>{const g=s.value===q.items[i].correct;s.classList.toggle('goed',g);s.classList.toggle('fout',!g);if(g)n++;});
+    ok=n===ss.length; if(!ok) msg=`${n} van de ${ss.length} goed.`;
+  } else if(q.kind==='plot'){
+    const pts=card._plot.pts, T=q.targets; const hit=T.filter(t=>pts.some(p=>p[0]===t[0]&&p[1]===t[1])).length;
+    ok=hit===T.length&&pts.length===T.length;
+    if(!ok) msg=`${hit} van de ${T.length} punten staan goed`+(pts.length>T.length?`, en je hebt ${pts.length-hit} punt(en) te veel.`:'.');
+    if(ok) card._plot.render(true);
+  }
+  if(ok){ S.correct.add(q.nr); card.classList.add('goed'); feedback(card,'Goed gedaan! 🎉',true); const u=card.querySelector('.uitleg'); if(q.uitleg) u.hidden=false; }
+  else { feedback(card,(msg?msg+' ':'')+(q.tries>=2?'Bekijk een hint of de uitwerking.':'Nog niet goed. Probeer het nog eens of neem een hint.'),false);
+    if(q.tries>=2&&q.uitleg) card.querySelector('[data-a=uitw]').hidden=false; }
+  updScore();
+  if(ZELF&&!S.restoring)save();
+}
+function feedback(card,t,g){const f=card.querySelector('.fb');f.textContent=t;f.className='fb '+(g?'goed':'fout');}
+function updScore(){
+  const tot=S.qs.length,n=S.correct.size;
+  document.getElementById('score').textContent=`✔ ${n} / ${tot} goed`;
+  document.querySelectorAll('[data-score]').forEach(e=>e.textContent=`Je hebt ${n} van de ${tot} opdrachten goed.`+(n===tot?' Top! 🌟':''));
+  document.querySelectorAll('[data-open]').forEach(e=>{e.innerHTML=S.qs.filter(q=>!S.correct.has(q.nr)).map(q=>`<button data-a="goto" data-n="${q.nr}" style="margin:3px">${q.exit?(ZELF?'Toets jezelf':'Exit-ticket'):'Opdracht '+q.nr}</button>`).join('')||'<i>Alles af!</i>';});
+}
+
+/* ---------- plot ---------- */
+function initPlot(card,q){
+  const box=card.querySelector('.plotbox'),ro=card.querySelector('.readout'),pts=[];
+  function render(done){
+    const sp=Object.assign({},q.graph);
+    sp.dots=(sp.dots||[]).concat(pts.map(p=>({x:p[0],y:p[1],cls:'pdot'})));
+    if(done){const T=q.targets.slice().sort((a,b)=>a[0]-b[0]);sp.series=(sp.series||[]).concat([{pts:T,smooth:q.connect==='smooth',color:'#d6336c'}]);}
+    const g=graph(sp);box.innerHTML=g.svg;const svg=box.querySelector('svg');
+    const toData=ev=>{const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+      const x=sp.xmin+(p.x-g.m.l)/(g.W-g.m.l-g.m.r)*(sp.xmax-sp.xmin),y=sp.ymin+(g.H-g.m.b-p.y)/(g.H-g.m.t-g.m.b)*(sp.ymax-sp.ymin);
+      return [+(Math.round(x/q.snap[0])*q.snap[0]).toFixed(6),+(Math.round(y/q.snap[1])*q.snap[1]).toFixed(6)];};
+    svg.addEventListener('mousemove',ev=>{const [x,y]=toData(ev);ro.textContent=`Muis bij punt (${fmt(x)}, ${fmt(y)})`;});
+    svg.addEventListener('click',ev=>{if(card.classList.contains('goed'))return;const [x,y]=toData(ev);
+      if(x<sp.xmin||x>sp.xmax||y<sp.ymin||y>sp.ymax)return;const i=pts.findIndex(p=>p[0]===x&&p[1]===y);
+      if(i>=0)pts.splice(i,1);else pts.push([x,y]);render();ro.textContent=`Gezette punten: ${pts.slice().sort((a,b)=>a[0]-b[0]).map(p=>`(${fmt(p[0])}, ${fmt(p[1])})`).join('  ')||'nog geen'}`;});
+  }
+  card._plot={pts,render};render();
+}
+
+/* ---------- widgets ---------- */
+const W={
+  regelmaat(el){
+    el.innerHTML=`<label>Aantal driehoeken: <input type="range" min="1" max="6" value="3"> <b class="n">3</b></label><div class="wrow"><div class="g"></div><div class="t"></div></div>`;
+    const r=el.querySelector('input');
+    const draw=()=>{const n=+r.value;el.querySelector('.n').textContent=n;const polys=[],texts=[],dots=[];
+      for(let k=1;k<=n;k++){const tx=3*k-2,ty=k+1;polys.push({pts:[[tx-1,0],[tx+1,0],[tx,ty]]});dots.push({x:tx,y:ty,r:4,color:'#1f5fa8'});texts.push({x:tx,y:0.45,t:String(k),style:'font-size:11px;font-weight:700'});}
+      el.querySelector('.g').innerHTML=graph({xmin:0,xmax:18,ymin:0,ymax:8,xgrid:1,ygrid:1,xlab:2,ylab:1,w:430,h:250,xname:'x',yname:'y',polys,dots,texts}).svg;
+      let t='<table class="tab"><tr><th>nummer</th><th>top</th><th></th></tr>';for(let k=1;k<=n;k++)t+=`<tr><td>${k}</td><td>(${3*k-2}, ${k+1})</td><td style="color:#d6336c;font-size:.85em">${k>1?'x +3, y +1':''}</td></tr>`;
+      el.querySelector('.t').innerHTML=t+'</table>';};
+    r.oninput=draw;draw();
+  },
+  lucifers(el){
+    el.innerHTML=`<label>Figuur nummer: <input type="range" min="1" max="8" value="1"> <b class="n">1</b></label><div class="g" style="margin:10px 0"></div><button>Tel de lucifers voor mij</button> <b class="c"></b>`;
+    const r=el.querySelector('input'),s=24;
+    const draw=()=>{const n=+r.value;el.querySelector('.n').textContent=n;el.querySelector('.c').textContent='';let o=`<svg viewBox="0 0 ${n*60+20} 80" width="${n*60+20}" style="max-width:100%">`;
+      const stick=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e8913a" stroke-width="5" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="4.5" fill="#d6336c"/>`;
+      for(let k=0;k<n;k++){const x=10+k*60;o+=stick(x+4,10,x+56,10)+stick(x+4,70,x+56,70)+stick(x+60,14,x+60,66);if(k===0)o+=stick(x,14,x,66);}
+      el.querySelector('.g').innerHTML=o+'</svg>';};
+    r.oninput=draw;el.querySelector('button').onclick=()=>{el.querySelector('.c').textContent=`${3*r.value+1} lucifers`;};draw();
+  },
+  aflees(el,cfg){
+    el.innerHTML=`<div class="g"></div><label>${cfg.xvar}: <input type="range" min="${cfg.graph.xmin}" max="${cfg.graph.xmax}" step="${cfg.step}" value="${cfg.start}"></label><p class="ro" style="font-weight:600"></p>`;
+    const r=el.querySelector('input'),P=cfg.graph.series[0].pts;
+    const at=x=>{for(let i=0;i<P.length-1;i++){const [a,b]=P[i],[c,d]=P[i+1];if(x>=a&&x<=c)return b+(d-b)*(x-a)/(c-a);}return P[P.length-1][1];};
+    const draw=()=>{const x=+r.value,y=at(x);const sp=Object.assign({},cfg.graph,{vline:x,hline:y,dots:[{x,y,color:'#1f5fa8'}]});
+      el.querySelector('.g').innerHTML=graph(sp).svg;el.querySelector('.ro').textContent=cfg.text.replace('{x}',fmt(x)).replace('{y}',fmt(y))+`  →  punt (${fmt(x)}, ${fmt(y)})`;};
+    r.oninput=draw;draw();
+  },
+  formule(el){
+    el.innerHTML=`<div class="wrow"><div><p><label>Getal zonder letter (start): <input type="range" min="0" max="40" step="5" value="20"> <b class="a"></b></label></p>
+      <p><label>Getal vóór de letter (per stap): <input type="range" min="-5" max="10" step="1" value="5"> <b class="b"></b></label></p>
+      <p style="font-size:1.3em">K = <b class="fa"></b> + <b class="fb2"></b><i>t</i></p><div class="t"></div></div><div class="g"></div></div>`;
+    const [ra,rb]=el.querySelectorAll('input');
+    const draw=()=>{const a=+ra.value,b=+rb.value;el.querySelector('.a').textContent=a;el.querySelector('.b').textContent=b;el.querySelector('.fa').textContent=a;el.querySelector('.fb2').textContent=fmt(b);
+      const pts=[0,1,2,3,4,5,6].map(t=>[t,a+b*t]);
+      el.querySelector('.t').innerHTML='<table class="tab"><tr><th><i>t</i></th>'+pts.map(p=>`<td>${p[0]}</td>`).join('')+'</tr><tr><th>K</th>'+pts.map(p=>`<td>${fmt(p[1])}</td>`).join('')+'</tr></table>';
+      el.querySelector('.g').innerHTML=graph({xmin:0,xmax:6,ymin:-40,ymax:100,xgrid:1,ygrid:10,ylab:20,w:360,h:300,xname:'t',yname:'K',series:[{pts}],dots:pts.map(p=>({x:p[0],y:p[1],r:4,color:'#1f5fa8'}))}).svg;};
+    ra.oninput=rb.oninput=draw;draw();
+  }
+};
+
+/* ---------- opbouw pagina ---------- */
+function build(){
+  document.title=`${L.par} ${L.title} – ${ZELF?'VWO 1':'interactieve les'}`;
+  const ph=L.phases;
+  document.body.innerHTML=`<header><div class="brand">Getal &amp; Ruimte · VWO 1 · Hoofdstuk 3 Grafieken en formules · Les ${L.nr}</div>
+   <h1>${L.par} ${L.title}</h1><div class="goal">🎯 ${L.leerdoelen.map(d=>d.doel).join('<br>🎯 ')}</div>
+   <div class="tools"><a class="homelink" href="${HOME}" title="Terug naar de homepage van Wis4All">← Wis4All</a><span class="pill" id="score"></span>${ZELF?'<button id="reset">↺ Opnieuw beginnen</button>':'<button id="bord">🖥️ Bordmodus</button>'}<button id="print">🖨️ Afdrukken</button></div></header>
+   <nav id="phases">${ph.map((p,i)=>`<button data-p="${i}">${i+1}. ${p.name}<small>${p.min} min</small></button>`).join('')}</nav>
+   ${ZELF?'<div id="timerbar">🕒 Richttijd voor dit deel: <span class="t" id="tt" style="font-size:1em"></span> · werk in je eigen tempo, je voortgang wordt bewaard in deze browser</div>':'<div id="timerbar">⏱ Tijd voor deze fase: <span class="t" id="tt"></span><button id="tgo">▶ Start</button><button id="treset">↺</button></div>'}
+   <main>${ph.map((p,i)=>`<section class="phase" data-p="${i}"><p class="phase-intro">${p.intro||''}</p>${p.blocks.map(blockHTML).join('')}</section>`).join('')}</main>
+   <footer class="nav"><button id="prev">◀ Vorige fase</button><a class="homefoot" href="${HOME}">← Terug naar Wis4All</a><button class="prim" id="next">Volgende fase ▶</button></footer>`;
+  S.qs.forEach(q=>{const c=document.getElementById('q'+q.nr);c._q=q;if(q.kind==='plot')initPlot(c,q);});
+  // widgets
+  ph.forEach(p=>p.blocks.forEach(b=>{if(b.type==='widget'){}}));
+  document.querySelectorAll('[data-w]').forEach((el,i)=>{const b=allBlocks().filter(b=>b.type==='widget')[i];W[b.name](el,b.cfg||{});});
+  document.addEventListener('click',onClick);
+  document.querySelectorAll('nav#phases button').forEach(b=>b.onclick=()=>go(+b.dataset.p));
+  if(ZELF){document.getElementById('reset').onclick=()=>{if(confirmReset()){try{localStorage.removeItem(KEY)}catch(e){}location.reload();}};}
+  else document.getElementById('bord').onclick=()=>document.body.classList.toggle('bord');
+  document.getElementById('print').onclick=()=>window.print();
+  document.getElementById('prev').onclick=()=>go(S.phase-1);
+  document.getElementById('next').onclick=()=>go(S.phase+1);
+  if(!ZELF){document.getElementById('tgo').onclick=toggleTimer;}
+  if(!ZELF)document.getElementById('treset').onclick=()=>{stopTimer();S.timer.left=ph[S.phase].min*60;showT();};
+  if(ZELF)restore();else go(0);
+  updScore();
+}
+function allBlocks(){return L.phases.flatMap(p=>p.blocks);}
+function go(i){
+  const ph=L.phases;if(i<0||i>=ph.length)return;S.phase=i;
+  document.querySelectorAll('section.phase').forEach(s=>s.classList.toggle('act',+s.dataset.p===i));
+  document.querySelectorAll('nav#phases button').forEach(b=>{const k=+b.dataset.p;b.classList.toggle('act',k===i);b.classList.toggle('done',k<i);});
+  document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===ph.length-1;
+  stopTimer();S.timer.left=ph[i].min*60;showT();if(ZELF&&!S.restoring)save();window.scrollTo({top:0,behavior:'smooth'});
+}
+function showT(){const t=S.timer.left,e=document.getElementById('tt');if(ZELF){e.textContent=`ongeveer ${Math.round(t/60)} minuten`;return;}e.textContent=`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;e.classList.toggle('op',t<=0);}
+function stopTimer(){clearInterval(S.timer.id);S.timer.run=false;const b=document.getElementById('tgo');if(b)b.textContent='▶ Start';}
+function toggleTimer(){if(S.timer.run){stopTimer();return;}S.timer.run=true;document.getElementById('tgo').textContent='⏸ Pauze';
+  S.timer.id=setInterval(()=>{if(S.timer.left>0)S.timer.left--;showT();if(S.timer.left<=0)stopTimer();},1000);}
+function onClick(e){
+  const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,card=b.closest('.card');
+  if(e.target.closest('nav#phases'))return;
+  if(a==='check')checkQ(card,card._q);
+  else if(a==='hint'){const q=card._q,h=card.querySelector('.hints'),n=h.children.length;if(n<q.hints.length){h.insertAdjacentHTML('beforeend',`<div class="h"><b>Hint ${n+1}:</b> ${q.hints[n]}</div>`);}
+    if(n+1>=q.hints.length){b.disabled=true;b.textContent='💡 Alle hints gebruikt';if(q.uitleg)card.querySelector('[data-a=uitw]').hidden=false;}else b.textContent=`💡 Hint (${n+2}/${q.hints.length})`;}
+  else if(a==='uitw'){card.querySelector('.uitleg').hidden=false;b.hidden=true;}
+  else if(a==='reveal'){card.querySelector('.uitleg').hidden=false;b.disabled=true;}
+  else if(a==='step'){const st=[...card.querySelectorAll('.st')],nx=st.find(s=>!s.classList.contains('show'));if(nx)nx.classList.add('show');if(!st.find(s=>!s.classList.contains('show'))){b.disabled=true;b.textContent='Klaar ✔';}}
+  else if(a==='lc'){const d=L.leerdoelen[+b.dataset.i],u=b.closest('div').nextElementSibling;u.hidden=false;
+    u.innerHTML=b.dataset.v==='ja'?'Mooi! Maak opgave '+d.L+' als controle en ga verder met het maakwerk op jouw niveau.':`Geen probleem. Bestudeer ${d.theorie} nog eens, maak opgave ${d.L} en vraag hulp als het niet lukt. Je kunt ook de opdrachten van deze les opnieuw doen.`;}
+  else if(a==='goto'){const n=+b.dataset.n,c=document.getElementById('q'+n);go(+c.closest('section').dataset.p);setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'center'}),350);}
+}
+
+/* ---------- voortgang bewaren (zelfstudie) ---------- */
+function confirmReset(){const c=document.getElementById('resetask');if(c){c.remove();return true;}
+  document.querySelector('.tools').insertAdjacentHTML('beforeend','<span id="resetask" class="pill">Klik nog een keer op "Opnieuw beginnen" om alles te wissen</span>');return false;}
+function cardState(c){return{v:[...c.querySelectorAll('input.f')].map(i=>i.value),s:[...c.querySelectorAll('select')].map(i=>i.value),
+  r:(c.querySelector('input[type=radio]:checked')||{}).value,p:c._plot?c._plot.pts.map(x=>x.slice()):null,ok:c.classList.contains('goed')};}
+function save(){try{const st={phase:S.phase,cards:{}};document.querySelectorAll('.card.q').forEach(c=>{const x=cardState(c);if(x.v.some(v=>v)||x.s.some(v=>v)||x.r!=null||(x.p&&x.p.length))st.cards[c.dataset.q]=x;});
+  localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function restore(){let st=null;try{st=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  S.restoring=true;
+  if(st&&st.cards){Object.keys(st.cards).forEach(n=>{const c=document.getElementById('q'+n),x=st.cards[n];if(!c)return;
+    c.querySelectorAll('input.f').forEach((i,k)=>i.value=x.v[k]||'');c.querySelectorAll('select').forEach((i,k)=>i.value=x.s[k]||'');
+    if(x.r!=null){const r=c.querySelectorAll('input[type=radio]')[+x.r];if(r)r.checked=true;}
+    if(x.p&&c._plot){x.p.forEach(p=>c._plot.pts.push(p));c._plot.render();}
+    if(x.ok){checkQ(c,c._q);c._q.tries=0;}});}
+  go(st&&st.phase?st.phase:0);S.restoring=false;}
+document.addEventListener('DOMContentLoaded',build);
+})();
+</script>
+</body></html>
